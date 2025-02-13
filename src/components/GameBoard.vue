@@ -4,8 +4,7 @@
         <!-- Add your game board elements here -->
         <div class="grid" @dragover.prevent @drop="handleDrop" ref="gameBoard">
             <div class="row" v-for="(row, rowIndex) in board" :key="rowIndex">
-                <div class="block" v-for="(block, blockIndex) in row" :key="blockIndex">
-                    <Block v-if="block" :shape="[[1]]" :index="blockIndex" @shapeClicked="handleShapeClicked" />
+                <div class="block" :class="{'filled-block': block}" v-for="(block, blockIndex) in row" :key="blockIndex">
                 </div>
             </div>
         </div>
@@ -96,8 +95,6 @@ export default {
             }
         },
         handleShapeClicked(shape) {
-            console.log('Shape clicked:', shape);
-            // Implement your logic to handle the shape click event
             this.selectedShape = shape;
         },
         handleDrop(event) {
@@ -110,6 +107,11 @@ export default {
             const row = Math.floor(dropY / 40); // Using dropY for row calculation
             const col = Math.floor(dropX / 40); // Using dropX for column calculation
             this.addShape(this.shapes[name], row, col);
+            this.removeShape(name);
+        },
+        removeShape(name) {
+            this.currentShapes = this.currentShapes.filter(shape => shape !== name);
+
         }
     },
     mounted() {
@@ -153,8 +155,8 @@ export default {
     background-color: #FFF;
 }
 
-.block:hover {
-    background-color: #f0f0f0;
+.filled-block {
+    background-color: #945353;
 }
 
 .shape-selection {

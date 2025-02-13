@@ -56,6 +56,11 @@ export default {
     },
     handleDragEnd() {
       // Handle any cleanup after drag ends if necessary
+      
+
+      this.$nextTick(() => {
+        this.$el.style.opacity = '1';
+      });
     }
   },
 }
