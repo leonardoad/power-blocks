@@ -87,6 +87,9 @@ export default {
                 }
             }
             this.removeShape(this.selectedShape);
+            this.checkRows();
+            this.checkColumns();
+
         },
         checkCollision(shape, row, col) {
             for (let i = 0; i < shape.length; i++) {
@@ -99,6 +102,20 @@ export default {
                 }
             }
             return false;
+        },
+        checkRows() {
+            for (let i = 0; i < this.board.length; i++) {
+                if (this.board[i].every(block => block === 'X')) {
+                    this.board.splice(i, 1, Array(8).fill(null));
+                }
+            }
+        },
+        checkColumns() {
+            for (let i = 0; i < this.board[0].length; i++) {
+                if (this.board.every(row => row[i] === 'X')) {
+                    this.board.forEach(row => row[i] = null);
+                }
+            }
         },
         handleShapeClicked(event) {
             this.selectedShape = event; // get the shape name from event
