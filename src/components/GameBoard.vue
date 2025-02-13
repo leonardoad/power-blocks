@@ -77,6 +77,8 @@ export default {
             this.initializeBoard();
         },
         addShape(shape, row, col) {
+            if(this.checkCollision(shape, row, col))
+                return;
             for (let i = 0; i < shape.length; i++) {
                 for (let j = 0; j < shape[i].length; j++) {
                     if (shape[i][j] === 1) {
@@ -85,6 +87,18 @@ export default {
                 }
             }
             this.removeShape(this.selectedShape);
+        },
+        checkCollision(shape, row, col) {
+            for (let i = 0; i < shape.length; i++) {
+                for (let j = 0; j < shape[i].length; j++) {
+                    if (shape[i][j] === 1) {
+                        if (this.board[row + i] === undefined || this.board[row + i][col + j] === undefined || this.board[row + i][col + j] !== null) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            return false;
         },
         handleShapeClicked(event) {
             this.selectedShape = event; // get the shape name from event
