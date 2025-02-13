@@ -43,8 +43,8 @@ export default {
         border: this.shape[rowIndex][blockIndex] ? '1px solid #ccc' : '1px solid transparent'
       };
     },
-    handleMouseDown(name) {
-      this.$emit('shapeClicked', name);
+    handleMouseDown() {
+      this.$emit('shapeClicked', this.name);
     },
     handleDragStart(event) {
       event.dataTransfer.setData('name', this.name);
@@ -71,6 +71,7 @@ export default {
   width: 35px;
   height: 35px;
   background-color: #945353;
+  cursor: pointer;
   /* border: 1px solid #ccc; */
 }
 

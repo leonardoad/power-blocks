@@ -13,7 +13,6 @@
                 <Block :shape="shapes[shape]" :name="shape" :index="index" @shapeClicked="handleShapeClicked" />
             </div>
         </div>
-        <button @click="addShape(shapes[selectedShape], 0, 0)">Add Shape</button>
     </div>
 </template>
 
@@ -24,16 +23,7 @@ export default {
     name: 'GameBoard',
     data() {
         return {
-            board: [
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-            ],
+            board: Array.from({ length: 8 }, () => Array(8).fill(null)),
             shapes: {
                 square: [
                     [1, 1],
@@ -75,12 +65,13 @@ export default {
                 ]
 
             },
-            currentShapes: ['square', 'line', 't', 'l', 'j', 's', 'z', 'bSquare', 'rectangle'],
-            selectedShape: 'bSquare'
+            currentShapes: [],
+            selectedShape: ''
         };
     },
     methods: {
         initializeBoard() {
+            this.getRandomShapes();
         },
         resetBoard() {
             this.initializeBoard();
@@ -93,12 +84,14 @@ export default {
                     }
                 }
             }
+            this.removeShape(this.selectedShape);
         },
-        handleShapeClicked(shape) {
-            this.selectedShape = shape;
+        handleShapeClicked(event) {
+            this.selectedShape = event; // get the shape name from event
         },
         handleDrop(event) {
             const name = event.dataTransfer.getData('name');
+            if (!name) return;
             const offsetX = parseFloat(event.dataTransfer.getData('offsetX'));
             const offsetY = parseFloat(event.dataTransfer.getData('offsetY'));
             const boardRect = this.$refs.gameBoard.getBoundingClientRect();
@@ -107,11 +100,21 @@ export default {
             const row = Math.floor(dropY / 40); // Using dropY for row calculation
             const col = Math.floor(dropX / 40); // Using dropX for column calculation
             this.addShape(this.shapes[name], row, col);
-            this.removeShape(name);
         },
         removeShape(name) {
-            this.currentShapes = this.currentShapes.filter(shape => shape !== name);
-
+            const index = this.currentShapes.indexOf(name);
+            if (index > -1) {
+                this.currentShapes.splice(index, 1);
+            }
+            if (this.currentShapes.length === 0) {
+                this.getRandomShapes();
+            }
+        },
+        getRandomShapes() {
+            //select 3 random shapes from the shapes object and add to the currentShapes array the shapes can be repeated
+            this.currentShapes = Array.from({ length: 3 }, () => {
+                return Object.keys(this.shapes)[Math.floor(Math.random() * Object.keys(this.shapes).length)];
+            });
         }
     },
     mounted() {
@@ -151,7 +154,6 @@ export default {
     align-items: center;
     justify-content: center;
     transition: background-color 0.3s;
-    cursor: pointer;
     background-color: #FFF;
 }
 
