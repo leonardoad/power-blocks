@@ -13,6 +13,11 @@
                 <Block :shape="shapes[shape]" :name="shape" :index="index" @shapeClicked="handleShapeClicked" />
             </div>
         </div>
+        
+        <div v-if="gameOver" class="game-over-overlay">
+            <div class="game-over-message">Game Over!</div>
+            <button @click="restartGame" class="restart-button">Restart</button>
+        </div>
     </div>
 </template>
 
@@ -66,7 +71,8 @@ export default {
 
             },
             currentShapes: [],
-            selectedShape: ''
+            selectedShape: '',
+            gameOver: false,
         };
     },
     methods: {
@@ -89,7 +95,7 @@ export default {
             this.removeShape(this.selectedShape);
             this.checkRows();
             this.checkColumns();
-
+            this.checkGameOver();
         },
         checkCollision(shape, row, col) {
             for (let i = 0; i < shape.length; i++) {
@@ -116,6 +122,20 @@ export default {
                     this.board.forEach(row => row[i] = null);
                 }
             }
+        },
+        checkGameOver() {
+            //the game is over when there is no space available for the next shape
+            for (let shape of this.currentShapes) {
+                for (let row = 0; row <= this.board.length - this.shapes[shape].length; row++) {
+                    for (let col = 0; col <= this.board[0].length - this.shapes[shape][0].length; col++) {
+                        if (!this.checkCollision(this.shapes[shape], row, col)) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            this.gameOver = true;
+            return true;
         },
         handleShapeClicked(event) {
             this.selectedShape = event; // get the shape name from event
@@ -146,6 +166,11 @@ export default {
             this.currentShapes = Array.from({ length: 3 }, () => {
                 return Object.keys(this.shapes)[Math.floor(Math.random() * Object.keys(this.shapes).length)];
             });
+        },
+        restartGame() {
+            this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
+            this.getRandomShapes();
+            this.gameOver = false;
         }
     },
     mounted() {
@@ -200,5 +225,42 @@ export default {
     margin: auto;
     padding: 30px;
     gap: 10px;
+}
+
+.game-over-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10; 
+}
+
+.game-over-message {
+    color: white;
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center;
+}
+.restart-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #fff;
+    background-color: #ff5722;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.restart-button:hover {
+    background-color: #e64a19;
 }
 </style>
