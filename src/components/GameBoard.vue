@@ -2,16 +2,14 @@
     <div class="game-board">
         <h2>Game Board</h2>
         <!-- Add your game board elements here -->
-        <div class="grid">
+        <div class="grid" @dragover.prevent @drop="handleDrop" ref="gameBoard">
             <div class="row" v-for="(row, rowIndex) in board" :key="rowIndex">
                 <div class="block" v-for="(block, blockIndex) in row" :key="blockIndex">
-
-                    <Block v-if="block" :shape="[[1]]" :index="blockIndex" />
+                    <Block v-if="block" :shape="[[1]]" :index="blockIndex" @shapeClicked="handleShapeClicked" />
                 </div>
             </div>
         </div>
         <div class="shape-selection">
-            
             <div v-for="(shape, index) in currentShapes" :key="index">
                 <Block :shape="shapes[shape]" :name="shape" :index="index" @shapeClicked="handleShapeClicked" />
             </div>
@@ -80,24 +78,10 @@ export default {
             },
             currentShapes: ['square', 'line', 't', 'l', 'j', 's', 'z', 'bSquare', 'rectangle'],
             selectedShape: 'bSquare'
-
-
         };
     },
     methods: {
         initializeBoard() {
-            this.board = [
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-                [null, null, null, null, null, null, null, null],
-            ];
-            // this.addShape(this.shapes.bSquare, 0, 0);
-            // this.addShape(this.shapes.line, 4, 4);
         },
         resetBoard() {
             this.initializeBoard();
@@ -115,14 +99,23 @@ export default {
             console.log('Shape clicked:', shape);
             // Implement your logic to handle the shape click event
             this.selectedShape = shape;
+        },
+        handleDrop(event) {
+            const name = event.dataTransfer.getData('name');
+            const offsetX = parseFloat(event.dataTransfer.getData('offsetX'));
+            const offsetY = parseFloat(event.dataTransfer.getData('offsetY'));
+            const boardRect = this.$refs.gameBoard.getBoundingClientRect();
+            const dropX = event.clientX - boardRect.left - offsetX;
+            const dropY = event.clientY - boardRect.top - offsetY;
+            const row = Math.floor(dropY / 40); // Using dropY for row calculation
+            const col = Math.floor(dropX / 40); // Using dropX for column calculation
+            this.addShape(this.shapes[name], row, col);
         }
-
     },
     mounted() {
         this.initializeBoard();
     }
 }
-
 </script>
 
 <style scoped>

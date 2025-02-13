@@ -1,5 +1,9 @@
 <template>
-  <div class="shape" @mousedown="handleClick(name)">
+  <div class="shape" 
+       @mousedown="handleMouseDown" 
+       @dragstart="handleDragStart" 
+       @dragend="handleDragEnd"
+       draggable="true">
       <div class="row" v-for="(row, rowIndex) in shape" :key="rowIndex">
           <div class="block" v-for="(block, blockIndex) in row" :key="blockIndex"  :style="applyStyles(rowIndex, blockIndex)">
           </div>
@@ -39,8 +43,19 @@ export default {
         border: this.shape[rowIndex][blockIndex] ? '1px solid #ccc' : '1px solid transparent'
       };
     },
-    handleClick(name) {
+    handleMouseDown(name) {
       this.$emit('shapeClicked', name);
+    },
+    handleDragStart(event) {
+      event.dataTransfer.setData('name', this.name);
+      const rect = event.target.getBoundingClientRect();
+      const offsetX = event.clientX - rect.left;
+      const offsetY = event.clientY - rect.top;
+      event.dataTransfer.setData('offsetX', offsetX);
+      event.dataTransfer.setData('offsetY', offsetY);
+    },
+    handleDragEnd() {
+      // Handle any cleanup after drag ends if necessary
     }
   },
 }
