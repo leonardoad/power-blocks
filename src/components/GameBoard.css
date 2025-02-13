@@ -19,7 +19,6 @@
     gap: 2px;
 }
 
-
 .cell {
     flex: 1;
     border: 0px solid #ccc;
@@ -66,6 +65,7 @@
     font-weight: bold;
     text-align: center;
 }
+
 .restart-button {
     margin-top: 20px;
     padding: 10px 20px;
@@ -81,4 +81,11 @@
 
 .restart-button:hover {
     background-color: #e64a19;
+}
+
+.score-board {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
 }

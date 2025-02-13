@@ -1,6 +1,10 @@
 <template>
     <div class="game-board">
-        <h2>Game Board</h2>
+        <h1>Block Blast!</h1>
+        <div class="score-board">
+            <div>High Score: {{ highScore }}</div>
+            <h3>Score: {{ score }}</h3>
+        </div>
         <!-- Add your game board elements here -->
         <div class="grid" @dragover.prevent @drop="handleDrop" ref="gameBoard">
             <div class="row" v-for="(row, rowIndex) in board" :key="rowIndex">
@@ -16,7 +20,7 @@
         
         <div v-if="gameOver" class="game-over-overlay">
             <div class="game-over-message">Game Over!</div>
-            <button @click="restartGame" class="restart-button">Restart</button>
+            <button @click="resetBoard" class="restart-button">Restart</button>
         </div>
     </div>
 </template>
@@ -38,14 +42,55 @@ export default {
                 line: [
                     [1, 1, 1, 1]
                 ],
+                line2: [
+                    [1],
+                    [1],
+                    [1],
+                    [1]
+                ],
                 t: [
                     [1, 1, 1],
                     [0, 1, 0]
+                ],
+                t2: [
+                    [1, 0],
+                    [1, 1],
+                    [1, 0]
+                ],
+                t3: [
+                    [0, 1, 0],
+                    [1, 1, 1]
+                ],
+                t4: [
+                    [0, 1],
+                    [1, 1],
+                    [0, 1]
+                ],
+                single: [
+                    [1]
                 ],
                 l: [
                     [1, 0],
                     [1, 0],
                     [1, 1]
+                ],
+                l2: [
+                    [1, 1],
+                    [0, 1],
+                    [0, 1]
+                ],
+                l3: [
+                    [1, 1],
+                    [1, 0],
+                    [1, 0]
+                ],
+                l4: [
+                    [1, 1, 1],
+                    [0, 0, 1],
+                ],
+                l5:[
+                    [1, 1, 1],
+                    [1, 0, 0],
                 ],
                 j: [
                     [0, 1],
@@ -74,14 +119,17 @@ export default {
             currentShapes: [],
             selectedShape: '',
             gameOver: false,
+            score: 0,
+            highScore: 0
         };
     },
     methods: {
-        initializeBoard() {
-            this.getRandomShapes();
-        },
         resetBoard() {
-            this.initializeBoard();
+            this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
+            this.getRandomShapes();
+            this.gameOver = false;
+            this.highScore = Math.max(this.highScore, this.score);
+            this.score = 0;
         },
         addShape(shape, row, col) {
             if(this.checkCollision(shape, row, col))
@@ -114,6 +162,7 @@ export default {
             for (let i = 0; i < this.board.length; i++) {
                 if (this.board[i].every(block => block === 'X')) {
                     this.board.splice(i, 1, Array(8).fill(null));
+                    this.score += 10;
                 }
             }
         },
@@ -121,6 +170,7 @@ export default {
             for (let i = 0; i < this.board[0].length; i++) {
                 if (this.board.every(row => row[i] === 'X')) {
                     this.board.forEach(row => row[i] = null);
+                    this.score += 10;
                 }
             }
         },
@@ -168,14 +218,9 @@ export default {
                 return Object.keys(this.shapes)[Math.floor(Math.random() * Object.keys(this.shapes).length)];
             });
         },
-        restartGame() {
-            this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
-            this.getRandomShapes();
-            this.gameOver = false;
-        }
     },
     mounted() {
-        this.initializeBoard();
+        this.resetBoard();
     }
 }
 </script>
