@@ -4,7 +4,7 @@
         <!-- Add your game board elements here -->
         <div class="grid" @dragover.prevent @drop="handleDrop" ref="gameBoard">
             <div class="row" v-for="(row, rowIndex) in board" :key="rowIndex">
-                <div class="block" :class="{'filled-block': block}" v-for="(block, blockIndex) in row" :key="blockIndex">
+                <div class="cell" :class="{'filled-cell': block}" v-for="(block, blockIndex) in row" :key="blockIndex">
                 </div>
             </div>
         </div>
@@ -23,6 +23,7 @@
 
 <script>
 import Block from './Block.vue';
+import './GameBoard.css';
 export default {
   components: { Block },
     name: 'GameBoard',
@@ -179,88 +180,3 @@ export default {
 }
 </script>
 
-<style scoped>
-.game-board {
-    /* Add your component styles here */
-}
-
-.grid {
-    display: flex;
-    flex-direction: column;
-    width: calc(40px * 8);
-    margin: 0 auto;
-    background-color: #f0f0f0;
-    gap: 2px;
-    border: 1px solid #ccc;
-}
-
-.row {
-    display: flex;
-    justify-content: center; /* Centering the blocks within the row */
-    align-items: center; /* Vertically aligning the blocks */
-    gap: 2px;
-}
-
-.block {
-    flex: 1;
-    border: 0px solid #ccc;
-    height: 40px;
-    width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s;
-    background-color: #FFF;
-}
-
-.filled-block {
-    background-color: #945353;
-}
-
-.shape-selection {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
-    width: 400px;
-    margin: auto;
-    padding: 30px;
-    gap: 10px;
-}
-
-.game-over-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 10; 
-}
-
-.game-over-message {
-    color: white;
-    font-size: 2em;
-    font-weight: bold;
-    text-align: center;
-}
-.restart-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    font-size: 1em;
-    font-weight: bold;
-    color: #fff;
-    background-color: #ff5722;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.restart-button:hover {
-    background-color: #e64a19;
-}
-</style>

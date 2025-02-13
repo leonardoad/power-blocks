@@ -12,6 +12,8 @@
 </template>
 
 <script>
+import './Block.css';
+
 export default {
   name: 'BlockComponent',
   props: {
@@ -65,17 +67,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-.block {
-  width: 35px;
-  height: 35px;
-  background-color: #945353;
-  cursor: pointer;
-  /* border: 1px solid #ccc; */
-}
-
-.row {
-    display: flex;
-}
-</style>
