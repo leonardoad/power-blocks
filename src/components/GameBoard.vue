@@ -129,6 +129,7 @@ export default {
             this.getRandomShapes();
             this.gameOver = false;
             this.highScore = Math.max(this.highScore, this.score);
+            localStorage.setItem('highScore', this.highScore);
             this.score = 0;
         },
         addShape(shape, row, col) {
@@ -220,6 +221,10 @@ export default {
         },
     },
     mounted() {
+        const savedHighScore = localStorage.getItem('highScore');
+        if (savedHighScore !== null) {
+            this.highScore = parseInt(savedHighScore, 10);
+        }
         this.resetBoard();
     }
 }
