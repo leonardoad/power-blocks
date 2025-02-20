@@ -143,8 +143,10 @@ export default {
                 }
             }
             this.removeShape(this.selectedShape);
-            this.checkRows();
-            this.checkColumns();
+            setTimeout(() => {
+                this.checkRows();
+                this.checkColumns();
+            }, 500);
             this.checkGameOver();
         },
         checkCollision(shape, row, col) {
