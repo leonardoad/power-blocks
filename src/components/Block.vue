@@ -10,7 +10,7 @@
        draggable="true"
        >
       <div class="row" v-for="(row, rowIndex) in shape" :key="rowIndex">
-          <div class="block" v-for="(block, blockIndex) in row" :key="blockIndex"  :style="applyStyles(rowIndex, blockIndex)">
+          <div :class="applyStyles(rowIndex, blockIndex) ? 'block fill' : 'block'" v-for="(block, blockIndex) in row" :key="blockIndex"  :style="applyStyles(rowIndex, blockIndex)">
           </div>
       </div>
   </div>
@@ -62,10 +62,7 @@ export default {
   methods: {
     applyStyles(rowIndex, blockIndex) {
       if (!this.shape) return;
-      return {
-        backgroundColor: this.shape[rowIndex][blockIndex] ? '#945353' : 'transparent',
-        border: this.shape[rowIndex][blockIndex] ? '1px solid #ccc' : '1px solid transparent'
-      };
+      if(this.shape[rowIndex][blockIndex]) return true;
     },
     handleMouseDown() {
       this.$emit('shapeClicked', this.name);
@@ -77,11 +74,6 @@ export default {
       const offsetY = event.clientY - rect.top;
       event.dataTransfer.setData('offsetX', offsetX);
       event.dataTransfer.setData('offsetY', offsetY);
-    },
-    handleDragEnd() {
-      this.$nextTick(() => {
-        this.$el.style.opacity = '1';
-      });
     },
     handleTouchStart(event) {
       event.preventDefault();

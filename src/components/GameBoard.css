@@ -32,7 +32,13 @@
 }
 
 .filled-cell {
-    background-color: #945353;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+    background: linear-gradient(145deg, #3e697a, #5e84b0);
+    box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.3);
 }
 
 .shape-selection {
