@@ -2,8 +2,8 @@
     <div class="game-board">
         <h1>Block Blast!</h1>
         <div class="score-board">
-            <div>High Score: {{ highScore }}</div>
-            <h3>Score: {{ score }}</h3>
+            <div class="high-score">High Score: {{ highScore }}</div>
+            <div class="score">{{ score }}</div>
         </div>
         <!-- Add your game board elements here -->
         <div class="grid" @dragover.prevent @drop="handleDrop" ref="gameBoard">

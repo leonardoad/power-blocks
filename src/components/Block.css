@@ -1,17 +1,30 @@
-.block {
-  width: 35px;
-  height: 35px;
-  margin-bottom: 2px;
+.shape{
+
 }
+
+.block {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  margin: 1px;
+}
+
 .fill {
+  margin: 0;
+  border: 1px solid #1e264a;
   cursor: pointer;
-  border-radius: 5px;
+  border-radius: 1px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.2s;
-  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.3);
+  box-shadow:  0.1rem 0.3rem 0.4rem rgba(0, 0, 0, 0.3),
+  inset 0px -0.4rem 0.2rem rgba(0, 0, 0, 0.3), 
+  inset -0.4rem 0px 0.2rem rgba(0, 0, 0, 0.2), 
+  inset 0px 0.4rem 1rem rgba(255, 255, 255, 0.4), 
+  inset 0.4rem 0px 0.2rem rgba(255, 255, 255, 0.1);
 }
+
 
 .row {
   display: flex;
