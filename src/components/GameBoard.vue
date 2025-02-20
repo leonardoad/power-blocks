@@ -14,7 +14,7 @@
         </div>
         <div class="shape-selection">
             <div v-for="(shape, index) in currentShapes" :key="index">
-                <Block :shape="shapes[shape]" :name="shape" :index="index" @shapeClicked="handleShapeClicked" />
+                <Block :shape="shapes[shape]" :name="shape" :index="index" @shapeClicked="handleShapeClicked" @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" />
             </div>
         </div>
         
@@ -120,7 +120,7 @@ export default {
             selectedShape: '',
             gameOver: false,
             score: 0,
-            highScore: 0
+            highScore: 0,
         };
     },
     methods: {
@@ -191,6 +191,17 @@ export default {
         },
         handleShapeClicked(event) {
             this.selectedShape = event; // get the shape name from event
+        },
+        handleShapeDropped(event) {
+            const offsetX = parseFloat(event.offsetX);
+            const offsetY = parseFloat(event.offsetY);
+            const boardRect = this.$refs.gameBoard.getBoundingClientRect();
+            const dropX = event.clientX - boardRect.left - offsetX;
+            const dropY = event.clientY - boardRect.top - offsetY;
+            const row = Math.floor(dropY / 40); // Using dropY for row calculation
+            const col = Math.floor(dropX / 40); // Using dropX for column calculation
+
+            this.addShape(this.shapes[this.selectedShape], row, col);
         },
         handleDrop(event) {
             const name = event.dataTransfer.getData('name');

@@ -3,7 +3,12 @@
        @mousedown="handleMouseDown" 
        @dragstart="handleDragStart" 
        @dragend="handleDragEnd"
-       draggable="true">
+       @touchstart="handleTouchStart"
+       @touchmove="handleTouchMove"
+       @touchend="handleTouchEnd"
+       :style="shapeStyle"
+       draggable="true"
+       >
       <div class="row" v-for="(row, rowIndex) in shape" :key="rowIndex">
           <div class="block" v-for="(block, blockIndex) in row" :key="blockIndex"  :style="applyStyles(rowIndex, blockIndex)">
           </div>
@@ -33,13 +38,30 @@ export default {
   },
   data() {
     return {
-      // Add your component data here
-      blockStyle: {}
+      blockStyle: {},
+      offsetX: 0,
+      offsetY: 0,
+      touchCurrentX: 0,
+      touchCurrentY: 0,
+      isDragging: false,
     };
+  },
+  computed: {
+    shapeStyle() {
+      if (this.isDragging) {
+        return {
+          position: 'absolute',
+          left: `${this.touchCurrentX}px`,
+          top: `${this.touchCurrentY}px`,
+          zIndex: 1000,
+        };
+      }
+      return {};
+    }
   },
   methods: {
     applyStyles(rowIndex, blockIndex) {
-      if(!this.shape) return;
+      if (!this.shape) return;
       return {
         backgroundColor: this.shape[rowIndex][blockIndex] ? '#945353' : 'transparent',
         border: this.shape[rowIndex][blockIndex] ? '1px solid #ccc' : '1px solid transparent'
@@ -57,12 +79,32 @@ export default {
       event.dataTransfer.setData('offsetY', offsetY);
     },
     handleDragEnd() {
-      // Handle any cleanup after drag ends if necessary
-      
-
       this.$nextTick(() => {
         this.$el.style.opacity = '1';
       });
+    },
+    handleTouchStart(event) {
+      event.preventDefault();
+      const rect = event.target.parentElement.getBoundingClientRect();
+      this.offsetX = event.touches[0].clientX - rect.left;
+      this.offsetY = event.touches[0].clientY - rect.top;
+
+      this.touchCurrentX = event.touches[0].clientX - this.offsetX;
+      this.touchCurrentY = event.touches[0].clientY - this.offsetY;
+
+      this.isDragging = true;
+      this.$emit('shapeClicked', this.name);
+    },
+    handleTouchMove(event) {
+      const touch = event.touches[0];
+      this.touchCurrentX = touch.clientX - this.offsetX;
+      this.touchCurrentY = touch.clientY - this.offsetY;
+    },
+    handleTouchEnd(event ) {
+      this.isDragging = false;
+      const touch = event.changedTouches[0];
+      this.$emit('shapeDropped', { name: this.name, clientX: touch.clientX, clientY: touch.clientY, offsetX: this.offsetX, offsetY: this.offsetY});
+
     }
   },
 }
