@@ -164,16 +164,24 @@ export default {
         checkRows() {
             for (let i = 0; i < this.board.length; i++) {
                 if (this.board[i].every(block => block !== null)) {
-                    this.board.splice(i, 1, Array(8).fill(null));
-                    this.score += 10;
+                    this.board[i].forEach((block, index) => {
+                        setTimeout(() => {
+                            this.board[i].splice(index, 1, null);
+                        }, index * 30);
+                    });
+                    this.score += 5 * 8;
                 }
             }
         },
         checkColumns() {
             for (let i = 0; i < this.board[0].length; i++) {
                 if (this.board.every(row => row[i] !== null)) {
-                    this.board.forEach(row => row[i] = null);
-                    this.score += 10;
+                    this.board.forEach((block, index) => {
+                        setTimeout(() => {
+                            this.board[index].splice(i, 1 , null);
+                        }, index * 30);
+                    });
+                    this.score += 5 * 8;
                 }
             }
         },
