@@ -8,7 +8,7 @@
         <!-- Add your game board elements here -->
         <div class="grid" @dragover.prevent @drop="handleDrop" ref="gameBoard">
             <div class="row" v-for="(row, rowIndex) in board" :key="rowIndex">
-                <div class="cell" :class="{'filled-cell': block}" v-for="(block, blockIndex) in row" :key="blockIndex">
+                <div class="cell" :class="{'filled-cell': block}" v-for="(block, blockIndex) in row" :key="blockIndex" :style="applyCellStyle(block)">
                 </div>
             </div>
         </div>
@@ -138,7 +138,7 @@ export default {
             for (let i = 0; i < shape.length; i++) {
                 for (let j = 0; j < shape[i].length; j++) {
                     if (shape[i][j] === 1) {
-                        this.board[row + i][col + j] = 'X';
+                        this.board[row + i][col + j] = this.selectedShapeColor;
                     }
                 }
             }
@@ -163,7 +163,7 @@ export default {
         },
         checkRows() {
             for (let i = 0; i < this.board.length; i++) {
-                if (this.board[i].every(block => block === 'X')) {
+                if (this.board[i].every(block => block !== null)) {
                     this.board.splice(i, 1, Array(8).fill(null));
                     this.score += 10;
                 }
@@ -171,7 +171,7 @@ export default {
         },
         checkColumns() {
             for (let i = 0; i < this.board[0].length; i++) {
-                if (this.board.every(row => row[i] === 'X')) {
+                if (this.board.every(row => row[i] !== null)) {
                     this.board.forEach(row => row[i] = null);
                     this.score += 10;
                 }
@@ -192,7 +192,8 @@ export default {
             return true;
         },
         handleShapeClicked(event) {
-            this.selectedShape = event; // get the shape name from event
+            this.selectedShape = event.name; // get the shape name from event
+            this.selectedShapeColor = event.color; // store color for future use
         },
         handleShapeDropped(event) {
             const offsetX = parseFloat(event.offsetX);
@@ -232,6 +233,14 @@ export default {
                 return Object.keys(this.shapes)[Math.floor(Math.random() * Object.keys(this.shapes).length)];
             });
         },
+        applyCellStyle(block) {
+            if (block !== null) {
+                return {
+                    background: `linear-gradient(145deg, ${block}, ${block} 50%, ${block} 50%, ${block} 100%)`,
+                };
+            }
+            return {};
+        }
     },
     mounted() {
         const savedHighScore = localStorage.getItem('highScore');

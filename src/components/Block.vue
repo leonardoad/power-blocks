@@ -44,6 +44,7 @@ export default {
       touchCurrentX: 0,
       touchCurrentY: 0,
       isDragging: false,
+      color: this.getRandomColor(),
     };
   },
   computed: {
@@ -62,10 +63,14 @@ export default {
   methods: {
     applyStyles(rowIndex, blockIndex) {
       if (!this.shape) return;
-      if(this.shape[rowIndex][blockIndex]) return true;
+      if(this.shape[rowIndex][blockIndex]) {
+        return {
+          background: `linear-gradient(145deg, ${this.color}, ${this.color} 50%, ${this.color} 50%, ${this.color} 100%)`,
+        }
+      }
     },
     handleMouseDown() {
-      this.$emit('shapeClicked', this.name);
+      this.$emit('shapeClicked', {name: this.name, color: this.color});
     },
     handleDragStart(event) {
       event.dataTransfer.setData('name', this.name);
@@ -85,7 +90,7 @@ export default {
       this.touchCurrentY = event.touches[0].clientY - this.offsetY;
 
       this.isDragging = true;
-      this.$emit('shapeClicked', this.name);
+      this.$emit('shapeClicked', {name: this.name, color: this.color});
     },
     handleTouchMove(event) {
       const touch = event.touches[0];
@@ -96,8 +101,15 @@ export default {
       this.isDragging = false;
       const touch = event.changedTouches[0];
       this.$emit('shapeDropped', { name: this.name, clientX: touch.clientX, clientY: touch.clientY, offsetX: this.offsetX, offsetY: this.offsetY});
-
-    }
+    },
+    getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    },
   },
 }
 </script>
