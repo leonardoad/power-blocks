@@ -9,6 +9,11 @@
   margin: 1px;
 }
 
+.dragging {
+  width: 35px;
+  height: 35px;
+}
+
 .fill {
   margin: 0;
   border: 1px solid #1e264a;

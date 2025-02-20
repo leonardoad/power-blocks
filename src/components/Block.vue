@@ -10,7 +10,7 @@
        draggable="true"
        >
       <div class="row" v-for="(row, rowIndex) in shape" :key="rowIndex">
-          <div :class="applyStyles(rowIndex, blockIndex) ? 'block fill' : 'block'" v-for="(block, blockIndex) in row" :key="blockIndex"  :style="applyStyles(rowIndex, blockIndex)">
+          <div class="block" :class="{'fill': applyStyles(rowIndex, blockIndex), 'dragging': isDragging}" v-for="(block, blockIndex) in row" :key="blockIndex"  :style="applyStyles(rowIndex, blockIndex)">
           </div>
       </div>
   </div>
