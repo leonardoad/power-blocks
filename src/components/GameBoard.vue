@@ -2,22 +2,24 @@
     <div class="game-board">
         <div class="title">Block Blast!</div>
         <div class="score-board">
-            <div class="high-score" >High Score: {{ highScore }}</div>
+            <div class="high-score">High Score: {{ highScore }}</div>
             <div class="score" :class="{ highlight: isHighScoreAnimated }">{{ scoreDisplay }}</div>
         </div>
         <!-- Add your game board elements here -->
         <div class="grid" @dragover.prevent @drop="handleDrop" ref="gameBoard">
             <div class="row" v-for="(row, rowIndex) in board" :key="rowIndex">
-                <div class="cell" v-for="(block, blockIndex) in row" :key="blockIndex" :class="{'filled-cell': block}" :style="applyCellStyle(block)">
+                <div class="cell" v-for="(block, blockIndex) in row" :key="blockIndex" :class="{ 'filled-cell': block }"
+                    :style="applyCellStyle(block)">
                 </div>
             </div>
         </div>
         <div class="shape-selection">
             <div v-for="(shape, index) in currentShapes" :key="index">
-                <Block :shape="shapes[shape]" :name="shape" :index="index" @shapeClicked="handleShapeClicked" @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" />
+                <Block :shape="shapes[shape]" :name="shape" :index="index" @shapeClicked="handleShapeClicked"
+                    @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" />
             </div>
         </div>
-        
+
         <div v-if="gameOver" class="game-over-overlay">
             <div class="game-over-message">Game Over!</div>
             <button @click="resetBoard" class="restart-button">Restart</button>
@@ -29,7 +31,7 @@
 import Block from './Block.vue';
 import './GameBoard.css';
 export default {
-  components: { Block },
+    components: { Block },
     name: 'GameBoard',
     data() {
         return {
@@ -88,7 +90,7 @@ export default {
                     [1, 1, 1],
                     [0, 0, 1],
                 ],
-                l5:[
+                l5: [
                     [1, 1, 1],
                     [1, 0, 0],
                 ],
@@ -156,7 +158,7 @@ export default {
         }
     },
     methods: {
-        incrementScoreDisplay(newValue, oldValue){
+        incrementScoreDisplay(newValue, oldValue) {
             if (newValue > oldValue) {
                 let increment = 1;
                 if (newValue - oldValue > 50) {
@@ -188,7 +190,7 @@ export default {
             this.score = 0;
         },
         addShape(shape, row, col) {
-            if(this.checkCollision(shape, row, col))
+            if (this.checkCollision(shape, row, col))
                 return;
             for (let i = 0; i < shape.length; i++) {
                 for (let j = 0; j < shape[i].length; j++) {
@@ -203,7 +205,7 @@ export default {
                 this.checkRows();
                 this.checkColumns();
                 setTimeout(() => {
-                this.gameOver = this.checkGameOver();
+                    this.gameOver = this.checkGameOver();
                 }, 1000);
             }, 500);
         },
@@ -236,7 +238,7 @@ export default {
                 if (this.board.every(row => row[i] !== null)) {
                     this.board.forEach((block, index) => {
                         setTimeout(() => {
-                            this.board[index].splice(i, 1 , null);
+                            this.board[index].splice(i, 1, null);
                         }, index * 10);
                     });
                     this.score += 5 * 8;
@@ -298,7 +300,7 @@ export default {
                 return Object.keys(this.shapes)[Math.floor(Math.random() * Object.keys(this.shapes).length)];
             });
 
-            if(this.checkGameOver()) {
+            if (this.checkGameOver()) {
                 this.getRandomShapes();
             }
 
@@ -321,4 +323,3 @@ export default {
     }
 }
 </script>
-
