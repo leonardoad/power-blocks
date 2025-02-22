@@ -96,6 +96,7 @@ export default {
       const touch = event.touches[0];
       this.touchCurrentX = touch.clientX - this.offsetX;
       this.touchCurrentY = (touch.clientY - this.offsetY) - this.shape.length * 60;
+      this.$emit('shapeDragged', { name: this.name, clientX: touch.clientX, clientY: (touch.clientY - this.offsetY) - this.shape.length * 55, offsetX: this.offsetX, offsetY: this.offsetY });
     },
     handleTouchEnd(event) {
       this.isDragging = false;

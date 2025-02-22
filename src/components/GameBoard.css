@@ -145,3 +145,12 @@ body {
         color: #fff;
     }
 }
+
+.hover-cell {
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: inset 0px -0.2rem 0.2rem rgba(0, 0, 0, 0.3),
+        inset -0.2rem 0px 0.2rem rgba(0, 0, 0, 0.2),
+        inset 0px 0.2rem 1rem rgba(255, 255, 255, 0.4),
+        inset 0.2rem 0px 0.2rem rgba(255, 255, 255, 0.1);
+
+}

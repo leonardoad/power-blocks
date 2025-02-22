@@ -6,9 +6,10 @@
             <div class="score" :class="{ highlight: isHighScoreAnimated }">{{ scoreDisplay }}</div>
         </div>
         <!-- Add your game board elements here -->
-        <div class="grid" @dragover.prevent @drop="handleDrop" ref="gameBoard">
+        <div class="grid" @dragover.prevent="handleDragOver" @drop="handleDrop" ref="gameBoard">
             <div class="row" v-for="(row, rowIndex) in board" :key="rowIndex">
-                <div class="cell" v-for="(block, blockIndex) in row" :key="blockIndex" :class="{ 'filled-cell': block }"
+                <div class="cell" v-for="(block, blockIndex) in row" :key="blockIndex"
+                    :class="{ 'filled-cell': block, 'hover-cell': isHoverCell(rowIndex, blockIndex) }"
                     :style="applyCellStyle(block)">
                 </div>
             </div>
@@ -147,6 +148,7 @@ export default {
             scoreDisplay: 0,
             highScore: 0,
             isHighScoreAnimated: false,
+            hoverCells: []
         };
     },
     watch: {
@@ -262,6 +264,17 @@ export default {
             this.selectedShape = event.name; // get the shape name from event
             this.selectedShapeColor = event.color; // store color for future use
         },
+        handleShapeDragged(event) {
+            const offsetX = parseFloat(event.offsetX);
+            const offsetY = parseFloat(event.offsetY);
+            const boardRect = this.$refs.gameBoard.getBoundingClientRect();
+            const dropX = event.clientX - boardRect.left - offsetX;
+            const dropY = event.clientY - boardRect.top - offsetY;
+            const row = Math.floor(dropY / 40); // Using dropY for row calculation
+            const col = Math.floor(dropX / 40); // Using dropX for column calculation
+
+            this.updateHoverCells(this.shapes[this.selectedShape], row, col);
+        },
         handleShapeDropped(event) {
             const offsetX = parseFloat(event.offsetX);
             const offsetY = parseFloat(event.offsetY);
@@ -272,6 +285,7 @@ export default {
             const col = Math.floor(dropX / 40); // Using dropX for column calculation
 
             this.addShape(this.shapes[this.selectedShape], row, col);
+            this.clearHoverCells();
         },
         handleDrop(event) {
             const name = event.dataTransfer.getData('name');
@@ -284,6 +298,7 @@ export default {
             const row = Math.floor(dropY / 40); // Using dropY for row calculation
             const col = Math.floor(dropX / 40); // Using dropX for column calculation
             this.addShape(this.shapes[name], row, col);
+            this.clearHoverCells();
         },
         removeShape(name) {
             const index = this.currentShapes.indexOf(name);
@@ -312,6 +327,22 @@ export default {
                 };
             }
             return {};
+        },
+        updateHoverCells(shape, row, col) {
+            this.hoverCells = [];
+            for (let i = 0; i < shape.length; i++) {
+                for (let j = 0; j < shape[i].length; j++) {
+                    if (shape[i][j] === 1) {
+                        this.hoverCells.push({ row: row + i, col: col + j });
+                    }
+                }
+            }
+        },
+        clearHoverCells() {
+            this.hoverCells = [];
+        },
+        isHoverCell(row, col) {
+            return this.hoverCells.some(cell => cell.row === row && cell.col === col);
         }
     },
     mounted() {
