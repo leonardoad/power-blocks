@@ -167,8 +167,8 @@ export default {
             setTimeout(() => {
                 this.checkRows();
                 this.checkColumns();
+                this.gameOver = this.checkGameOver();
             }, 500);
-            this.checkGameOver();
         },
         checkCollision(shape, row, col) {
             for (let i = 0; i < shape.length; i++) {
@@ -217,7 +217,6 @@ export default {
                     }
                 }
             }
-            this.gameOver = true;
             return true;
         },
         handleShapeClicked(event) {
@@ -261,6 +260,11 @@ export default {
             this.currentShapes = Array.from({ length: 3 }, () => {
                 return Object.keys(this.shapes)[Math.floor(Math.random() * Object.keys(this.shapes).length)];
             });
+
+            if(this.checkGameOver()) {
+                this.getRandomShapes();
+            }
+
         },
         applyCellStyle(block) {
             if (block !== null) {
