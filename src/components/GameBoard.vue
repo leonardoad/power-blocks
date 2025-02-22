@@ -1,6 +1,6 @@
 <template>
     <div class="game-board">
-        <h1>Block Blast!</h1>
+        <div class="title">Block Blast!</div>
         <div class="score-board">
             <div class="high-score">High Score: {{ highScore }}</div>
             <div class="score">{{ score }}</div>
@@ -8,7 +8,7 @@
         <!-- Add your game board elements here -->
         <div class="grid" @dragover.prevent @drop="handleDrop" ref="gameBoard">
             <div class="row" v-for="(row, rowIndex) in board" :key="rowIndex">
-                <div class="cell" :class="{'filled-cell': block}" v-for="(block, blockIndex) in row" :key="blockIndex" :style="applyCellStyle(block)">
+                <div class="cell" v-for="(block, blockIndex) in row" :key="blockIndex" :class="{'filled-cell': block}" :style="applyCellStyle(block)">
                 </div>
             </div>
         </div>
@@ -111,9 +111,30 @@ export default {
                     [1, 1, 1]
                 ],
                 rectangle: [
-                    [1, 1, 1, 1],
-                    [1, 1, 1, 1]
-                ]
+                    [1, 1, 1],
+                    [1, 1, 1]
+                ],
+                rectangle2: [
+                    [1, 1],
+                    [1, 1],
+                    [1, 1]
+                ],
+                corner: [
+                    [1, 1],
+                    [0, 1]
+                ],
+                corner2: [
+                    [1, 0],
+                    [1, 1]
+                ],
+                corner3: [
+                    [0, 1],
+                    [1, 1]
+                ],
+                corner4: [
+                    [1, 1],
+                    [1, 0]
+                ],
 
             },
             currentShapes: [],
