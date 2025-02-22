@@ -2,8 +2,8 @@
     <div class="game-board">
         <div class="title">Block Blast!</div>
         <div class="score-board">
-            <div class="high-score">High Score: {{ highScore }}</div>
-            <div class="score">{{ score }}</div>
+            <div class="high-score" >High Score: {{ highScore }}</div>
+            <div class="score" :class="{ highlight: isHighScoreAnimated }">{{ scoreDisplay }}</div>
         </div>
         <!-- Add your game board elements here -->
         <div class="grid" @dragover.prevent @drop="handleDrop" ref="gameBoard">
@@ -139,12 +139,46 @@ export default {
             },
             currentShapes: [],
             selectedShape: '',
+            selectedShapeColor: '',
             gameOver: false,
             score: 0,
+            scoreDisplay: 0,
             highScore: 0,
+            isHighScoreAnimated: false,
         };
     },
+    watch: {
+        score(newValue, oldValue) {
+            this.incrementScoreDisplay(newValue, oldValue);
+            if (newValue > this.highScore) {
+                this.animateHighScore();
+            }
+        }
+    },
     methods: {
+        incrementScoreDisplay(newValue, oldValue){
+            if (newValue > oldValue) {
+                let increment = 1;
+                if (newValue - oldValue > 50) {
+                    increment = 10;
+                } else if (newValue - oldValue > 10) {
+                    increment = 5;
+                }
+                const interval = setInterval(() => {
+                    this.scoreDisplay += increment;
+                    if (this.scoreDisplay >= this.score) {
+                        this.scoreDisplay = this.score;
+                        clearInterval(interval);
+                    }
+                }, 1);
+            }
+        },
+        animateHighScore() {
+            this.isHighScoreAnimated = true;
+            setTimeout(() => {
+                this.isHighScoreAnimated = false;
+            }, 1000); // Duration of the animation
+        },
         resetBoard() {
             this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
             this.getRandomShapes();
@@ -160,6 +194,7 @@ export default {
                 for (let j = 0; j < shape[i].length; j++) {
                     if (shape[i][j] === 1) {
                         this.board[row + i][col + j] = this.selectedShapeColor;
+                        this.score += 1;
                     }
                 }
             }
@@ -167,7 +202,9 @@ export default {
             setTimeout(() => {
                 this.checkRows();
                 this.checkColumns();
+                setTimeout(() => {
                 this.gameOver = this.checkGameOver();
+                }, 1000);
             }, 500);
         },
         checkCollision(shape, row, col) {
@@ -188,7 +225,7 @@ export default {
                     this.board[i].forEach((block, index) => {
                         setTimeout(() => {
                             this.board[i].splice(index, 1, null);
-                        }, index * 30);
+                        }, index * 10);
                     });
                     this.score += 5 * 8;
                 }
@@ -200,7 +237,7 @@ export default {
                     this.board.forEach((block, index) => {
                         setTimeout(() => {
                             this.board[index].splice(i, 1 , null);
-                        }, index * 30);
+                        }, index * 10);
                     });
                     this.score += 5 * 8;
                 }

@@ -24,7 +24,7 @@ body {
     top: 20px;
 }
 
-.score{
+.score {
     font-size: 2em;
 }
 
@@ -41,8 +41,10 @@ body {
 
 .row {
     display: flex;
-    justify-content: center; /* Centering the blocks within the row */
-    align-items: center; /* Vertically aligning the blocks */
+    justify-content: center;
+    /* Centering the blocks within the row */
+    align-items: center;
+    /* Vertically aligning the blocks */
     gap: 0px;
 }
 
@@ -62,10 +64,10 @@ body {
 .filled-cell {
     border-radius: 1px;
     transition: transform 0.2s;
-    box-shadow: inset 0px -0.4rem 0.2rem rgba(0, 0, 0, 0.3), 
-    inset -0.4rem 0px 0.2rem rgba(0, 0, 0, 0.2), 
-    inset 0px 0.4rem 1rem rgba(255, 255, 255, 0.4), 
-    inset 0.4rem 0px 0.2rem rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0px -0.4rem 0.2rem rgba(0, 0, 0, 0.3),
+        inset -0.4rem 0px 0.2rem rgba(0, 0, 0, 0.2),
+        inset 0px 0.4rem 1rem rgba(255, 255, 255, 0.4),
+        inset 0.4rem 0px 0.2rem rgba(255, 255, 255, 0.1);
 }
 
 .shape-selection {
@@ -89,7 +91,7 @@ body {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    z-index: 10; 
+    z-index: 10;
 }
 
 .game-over-message {
@@ -121,4 +123,25 @@ body {
     margin-bottom: 20px;
     font-size: 1.5em;
     font-weight: bold;
+}
+
+.score.highlight {
+    animation: highlight 1s ease-in-out;
+}
+
+@keyframes highlight {
+    0% {
+        transform: scale(1);
+        color: #fff;
+    }
+
+    50% {
+        transform: scale(1.2);
+        color: #ff0;
+    }
+
+    100% {
+        transform: scale(1);
+        color: #fff;
+    }
 }
