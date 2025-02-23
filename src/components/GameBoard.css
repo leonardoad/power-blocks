@@ -4,6 +4,7 @@ body {
     width: 100vw;
     margin: 0;
     padding: 0;
+    touch-action: none; /* Disable default touch behavior */
 }
 
 .game-board {
