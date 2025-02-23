@@ -330,6 +330,8 @@ export default {
         },
         updateHoverCells(shape, row, col) {
             this.hoverCells = [];
+            if (this.checkCollision(shape, row, col))
+                return;
             for (let i = 0; i < shape.length; i++) {
                 for (let j = 0; j < shape[i].length; j++) {
                     if (shape[i][j] === 1) {
