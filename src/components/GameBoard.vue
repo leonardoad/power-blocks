@@ -1,26 +1,11 @@
 <template>
     <div class="game-board">
         <div class="title">Block Blast!</div>
-        <div class="score-board">
-            <div class="high-score">High Score: {{ highScore }}</div>
-            <div class="score" :class="{ highlight: isHighScoreAnimated }">{{ scoreDisplay }}</div>
-        </div>
-        <!-- Add your game board elements here -->
-        <div class="grid" @dragover.prevent="handleDragOver" @drop="handleDrop" ref="gameBoard">
-            <div class="row" v-for="(row, rowIndex) in board" :key="rowIndex">
-                <div class="cell" v-for="(block, blockIndex) in row" :key="blockIndex"
-                    :class="{ 'filled-cell': block, 'hover-cell': isHoverCell(rowIndex, blockIndex) }"
-                    :style="applyCellStyle(block)">
-                </div>
-            </div>
-        </div>
-        <div class="shape-selection">
-            <div v-for="(shape, index) in currentShapes" :key="index">
-                <Block :shape="shapes[shape]" :name="shape" :index="index" @shapeClicked="handleShapeClicked"
+        <ScoreBoard :highScore="highScore" :scoreDisplay="scoreDisplay" :isHighScoreAnimated="isHighScoreAnimated" />
+        <GameGrid :board="board" :hoverCells="hoverCells" @dragover="handleDragOver" @drop="handleDrop" ref="gameBoard" />
+        <ShapeSelection :shapes="shapes" :currentShapes="currentShapes" @shapeClicked="handleShapeClicked"
                     @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" />
-            </div>
-        </div>
-
+    
         <div v-if="gameOver" class="game-over-overlay">
             <div class="game-over-message">Game Over!</div>
             <button @click="resetBoard" class="restart-button">Restart</button>
@@ -36,12 +21,14 @@
 </template>
 
 <script>
-import Block from './Block.vue';
+import ScoreBoard from './ScoreBoard.vue';
+import GameGrid from './GameGrid.vue';
+import ShapeSelection from './ShapeSelection.vue';
 import CustomPieceCreator from './CustomPieceCreator.vue';
 
 import './GameBoard.css';
 export default {
-    components: { Block, CustomPieceCreator },
+    components: { CustomPieceCreator, GameGrid, ScoreBoard, ShapeSelection },
     name: 'GameBoard',
     data() {
         return {
@@ -320,7 +307,7 @@ export default {
         handleShapeDragged(event) {
             const offsetX = parseFloat(event.offsetX);
             const offsetY = parseFloat(event.offsetY);
-            const boardRect = this.$refs.gameBoard.getBoundingClientRect();
+            const boardRect = this.$refs.gameBoard.$el.getBoundingClientRect();
             const dropX = event.clientX - boardRect.left - offsetX;
             const dropY = event.clientY - boardRect.top - offsetY;
             const row = Math.floor(dropY / 40); // Using dropY for row calculation
@@ -331,7 +318,7 @@ export default {
         handleShapeDropped(event) {
             const offsetX = parseFloat(event.offsetX);
             const offsetY = parseFloat(event.offsetY);
-            const boardRect = this.$refs.gameBoard.getBoundingClientRect();
+            const boardRect = this.$refs.gameBoard.$el.getBoundingClientRect();
             const dropX = event.clientX - boardRect.left - offsetX;
             const dropY = event.clientY - boardRect.top - offsetY;
             const row = Math.floor(dropY / 40); // Using dropY for row calculation
@@ -345,7 +332,7 @@ export default {
             if (!name) return;
             const offsetX = parseFloat(event.dataTransfer.getData('offsetX'));
             const offsetY = parseFloat(event.dataTransfer.getData('offsetY'));
-            const boardRect = this.$refs.gameBoard.getBoundingClientRect();
+            const boardRect = this.$refs.gameBoard.$el.getBoundingClientRect();
             const dropX = event.clientX - boardRect.left - offsetX;
             const dropY = event.clientY - boardRect.top - offsetY;
             const row = Math.floor(dropY / 40); // Using dropY for row calculation
