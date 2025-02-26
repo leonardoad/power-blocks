@@ -87,7 +87,7 @@ export default {
       this.offsetY = event.touches[0].clientY - rect.top;
 
       this.touchCurrentX = event.touches[0].clientX - this.offsetX;
-      this.touchCurrentY = (event.touches[0].clientY - this.offsetY) - this.shape.length * 60;
+      this.touchCurrentY = (event.touches[0].clientY - this.offsetY) - this.shape.length * 90;
 
       this.isDragging = true;
       this.$emit('shapeClicked', {name: this.name, color: this.color});
@@ -95,13 +95,13 @@ export default {
     handleTouchMove(event) {
       const touch = event.touches[0];
       this.touchCurrentX = touch.clientX - this.offsetX;
-      this.touchCurrentY = (touch.clientY - this.offsetY) - this.shape.length * 60;
-      this.$emit('shapeDragged', { name: this.name, clientX: touch.clientX, clientY: (touch.clientY - this.offsetY) - this.shape.length * 55, offsetX: this.offsetX, offsetY: this.offsetY });
+      this.touchCurrentY = (touch.clientY - this.offsetY) - this.shape.length * 90;
+      this.$emit('shapeDragged', { name: this.name, clientX: touch.clientX, clientY: (touch.clientY - this.offsetY) - this.shape.length * 90, offsetX: this.offsetX, offsetY: this.offsetY });
     },
     handleTouchEnd(event) {
       this.isDragging = false;
       const touch = event.changedTouches[0];
-      this.$emit('shapeDropped', { name: this.name, clientX: touch.clientX, clientY: touch.clientY - (this.shape.length * 60), offsetX: this.offsetX, offsetY: this.offsetY});
+      this.$emit('shapeDropped', { name: this.name, clientX: touch.clientX, clientY: touch.clientY - (this.shape.length * 90), offsetX: this.offsetX, offsetY: this.offsetY});
     },
     getRandomColor() {
       const letters = '0123456789ABCDEF';
