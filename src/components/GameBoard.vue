@@ -24,7 +24,10 @@
         <div v-if="gameOver" class="game-over-overlay">
             <div class="game-over-message">Game Over!</div>
             <button @click="resetBoard" class="restart-button">Restart</button>
+            <button @click="undoMove" class="back-button" v-if="history.length > 0">Back</button>
         </div>
+
+        <button @click="undoMove" class="back-button" v-if="history.length > 0">Back</button>
     </div>
 </template>
 
@@ -186,7 +189,8 @@ export default {
             scoreDisplay: 0,
             highScore: 0,
             isHighScoreAnimated: false,
-            hoverCells: []
+            hoverCells: [],
+            history: [] // Add history array
         };
     },
     watch: {
@@ -213,6 +217,8 @@ export default {
                         clearInterval(interval);
                     }
                 }, 1);
+            }else{
+                this.scoreDisplay = this.score;
             }
         },
         animateHighScore() {
@@ -228,10 +234,12 @@ export default {
             this.highScore = Math.max(this.highScore, this.score);
             localStorage.setItem('highScore', this.highScore);
             this.score = 0;
+            this.history = []; // Clear history on reset
         },
         addShape(shape, row, col) {
             if (this.checkCollision(shape, row, col))
                 return;
+            this.saveState(); // Save the current state before adding the shape
             for (let i = 0; i < shape.length; i++) {
                 for (let j = 0; j < shape[i].length; j++) {
                     if (shape[i][j] === 1) {
@@ -383,6 +391,23 @@ export default {
         },
         isHoverCell(row, col) {
             return this.hoverCells.some(cell => cell.row === row && cell.col === col);
+        },
+        saveState() {
+            // Save the current state of the board and the score
+            this.history.push({
+                board: JSON.parse(JSON.stringify(this.board)),
+                score: this.score,
+                currentShapes: JSON.parse(JSON.stringify(this.currentShapes))
+            });
+        },
+        undoMove() {
+            if (this.history.length > 0) {
+                const previousState = this.history.pop();
+                this.board = previousState.board;
+                this.score = previousState.score;
+                this.currentShapes = previousState.currentShapes;
+                this.gameOver = false;
+            }
         }
     },
     mounted() {
