@@ -1,0 +1,63 @@
+.custom-piece-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-piece-overlay-content {
+  background: linear-gradient(to bottom, #4358ad, #2c3e75);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.custom-piece-grid {
+    display: flex;
+    flex-direction: column;
+    width: calc(40px * 8);
+    margin: 0 auto;
+    background-color: #1e264a;
+    gap: 0px;
+    border: 4px solid #374b81;
+    border-radius: 5px;
+    width: fit-content;
+}
+
+.custom-piece-row {
+    display: flex;
+    justify-content: center;
+    /* Centering the blocks within the row */
+    align-items: center;
+    /* Vertically aligning the blocks */
+    gap: 0px;
+}
+
+.custom-piece-cell {
+    border-top: 2px solid #1e264a;
+    border-left: 2px solid #1e264a;
+    height: 40px;
+    width: 40px;
+    transition: background-color 0.3s;
+    background-color: #232b54;
+}
+
+.custom-piece-cell.filled {
+  background-color: #5b6cb9;
+}
+
+.custom-piece-controls {
+  margin-top: 20px;
+}
+
+.custom-piece-button {
+  margin: 0 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}

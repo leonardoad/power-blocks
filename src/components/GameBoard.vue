@@ -28,14 +28,20 @@
         </div>
 
         <button @click="undoMove" class="back-button" v-if="history.length > 0">Back</button>
+        <button @click="openCustomPieceCreator" class="create-piece-button">Create Your Custom Piece</button>
+
+        <CustomPieceCreator :visible="isCustomPieceCreatorVisible" @save="handleCustomPieceSave" @cancel="handleCustomPieceCancel" />
+
     </div>
 </template>
 
 <script>
 import Block from './Block.vue';
+import CustomPieceCreator from './CustomPieceCreator.vue';
+
 import './GameBoard.css';
 export default {
-    components: { Block },
+    components: { Block, CustomPieceCreator },
     name: 'GameBoard',
     data() {
         return {
@@ -190,7 +196,8 @@ export default {
             highScore: 0,
             isHighScoreAnimated: false,
             hoverCells: [],
-            history: [] // Add history array
+            history: [], // Add history array
+            isCustomPieceCreatorVisible: false, // Add visibility state for custom piece creator
         };
     },
     watch: {
@@ -408,6 +415,18 @@ export default {
                 this.currentShapes = previousState.currentShapes;
                 this.gameOver = false;
             }
+        },
+        openCustomPieceCreator() {
+            this.isCustomPieceCreatorVisible = true;
+        },
+        handleCustomPieceSave(grid) {
+            this.isCustomPieceCreatorVisible = false;
+            const customShape = grid.map(row => row.map(cell => (cell ? 1 : 0)));
+            this.shapes.custom = customShape;
+            this.currentShapes.push('custom');
+        },
+        handleCustomPieceCancel() {
+            this.isCustomPieceCreatorVisible = false;
         }
     },
     mounted() {
@@ -419,3 +438,24 @@ export default {
     }
 }
 </script>
+
+<style>
+.create-piece-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #232b54;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: #fff;
+    font-weight: bold;
+}
+
+.create-piece-button:hover {
+    background-color: #1e264a;
+}
+</style>
