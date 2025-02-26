@@ -35,6 +35,10 @@ export default {
       type: Number,
       required: true
     },
+    disableDragging: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -70,9 +74,11 @@ export default {
       }
     },
     handleMouseDown() {
+      if (this.disableDragging) return;
       this.$emit('shapeClicked', {name: this.name, color: this.color});
     },
     handleDragStart(event) {
+      if (this.disableDragging) return;
       event.dataTransfer.setData('name', this.name);
       const rect = event.target.getBoundingClientRect();
       const offsetX = event.clientX - rect.left;
@@ -81,6 +87,7 @@ export default {
       event.dataTransfer.setData('offsetY', offsetY);
     },
     handleTouchStart(event) {
+      if (this.disableDragging) return;
       event.preventDefault();
       const rect = event.target.parentElement.getBoundingClientRect();
       this.offsetX = event.touches[0].clientX - rect.left;
@@ -93,12 +100,14 @@ export default {
       this.$emit('shapeClicked', {name: this.name, color: this.color});
     },
     handleTouchMove(event) {
+      if (this.disableDragging) return;
       const touch = event.touches[0];
       this.touchCurrentX = touch.clientX - this.offsetX;
       this.touchCurrentY = (touch.clientY - this.offsetY) - this.shape.length * 90;
       this.$emit('shapeDragged', { name: this.name, clientX: touch.clientX, clientY: (touch.clientY - this.offsetY) - this.shape.length * 90, offsetX: this.offsetX, offsetY: this.offsetY });
     },
     handleTouchEnd(event) {
+      if (this.disableDragging) return;
       this.isDragging = false;
       const touch = event.changedTouches[0];
       this.$emit('shapeDropped', { name: this.name, clientX: touch.clientX, clientY: touch.clientY - (this.shape.length * 90), offsetX: this.offsetX, offsetY: this.offsetY});

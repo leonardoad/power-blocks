@@ -14,8 +14,10 @@
 
         <button @click="undoMove" class="back-button" v-if="history.length > 0">Back</button>
         <button @click="openCustomPieceCreator" class="create-piece-button">Create Your Custom Piece</button>
+        <button @click="openSelectShapes" class="open-select-shapes-button">Select Shapes</button>
 
         <CustomPieceCreator :visible="isCustomPieceCreatorVisible" @save="handleCustomPieceSave" @cancel="handleCustomPieceCancel" />
+        <SelectShapes :visible="isSelectShapesVisible" :shapes="shapes" :initialSelectedShapes="selectedShapes" @save="handleSelectShapesSave" @cancel="handleSelectShapesCancel" />
 
     </div>
 </template>
@@ -25,10 +27,11 @@ import ScoreBoard from './ScoreBoard.vue';
 import GameGrid from './GameGrid.vue';
 import ShapeSelection from './ShapeSelection.vue';
 import CustomPieceCreator from './CustomPieceCreator.vue';
+import SelectShapes from './SelectShapes.vue';
 
 import './GameBoard.css';
 export default {
-    components: { CustomPieceCreator, GameGrid, ScoreBoard, ShapeSelection },
+    components: { CustomPieceCreator, GameGrid, ScoreBoard, ShapeSelection, SelectShapes },
     name: 'GameBoard',
     data() {
         return {
@@ -185,6 +188,8 @@ export default {
             hoverCells: [],
             history: [], // Add history array
             isCustomPieceCreatorVisible: false, // Add visibility state for custom piece creator
+            isSelectShapesVisible: false, // Add visibility state for select shapes
+            selectedShapes: [] // Add selected shapes array
         };
     },
     watch: {
@@ -223,12 +228,12 @@ export default {
         },
         resetBoard() {
             this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
-            this.getRandomShapes();
             this.gameOver = false;
             this.highScore = Math.max(this.highScore, this.score);
             localStorage.setItem('highScore', this.highScore);
             this.score = 0;
             this.history = []; // Clear history on reset
+            this.getRandomShapes();
         },
         addShape(shape, row, col) {
             if (this.checkCollision(shape, row, col))
@@ -352,7 +357,7 @@ export default {
         getRandomShapes() {
             //select 3 random shapes from the shapes object and add to the currentShapes array the shapes can be repeated
             this.currentShapes = Array.from({ length: 3 }, () => {
-                return Object.keys(this.shapes)[Math.floor(Math.random() * Object.keys(this.shapes).length)];
+                return this.selectedShapes[Math.floor(Math.random() * this.selectedShapes.length)];
             });
 
             if (this.checkGameOver()) {
@@ -414,6 +419,18 @@ export default {
         },
         handleCustomPieceCancel() {
             this.isCustomPieceCreatorVisible = false;
+        },
+        openSelectShapes() {
+            this.isSelectShapesVisible = true;
+        },
+        handleSelectShapesSave(selectedShapes) {
+            this.isSelectShapesVisible = false;
+            this.selectedShapes = selectedShapes;
+            localStorage.setItem('selectedShapes', JSON.stringify(this.selectedShapes));
+            this.getRandomShapes();
+        },
+        handleSelectShapesCancel() {
+            this.isSelectShapesVisible = false;
         }
     },
     mounted() {
@@ -421,28 +438,9 @@ export default {
         if (savedHighScore !== null) {
             this.highScore = parseInt(savedHighScore, 10);
         }
+        this.selectedShapes = localStorage.getItem('selectedShapes') ? JSON.parse(localStorage.getItem('selectedShapes')) : Object.keys(this.shapes);
         this.resetBoard();
     }
 }
 </script>
 
-<style>
-.create-piece-button {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #232b54;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    color: #fff;
-    font-weight: bold;
-}
-
-.create-piece-button:hover {
-    background-color: #1e264a;
-}
-</style>

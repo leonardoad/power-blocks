@@ -179,3 +179,37 @@ body {
     background-color: #ccc;
     cursor: not-allowed;
 }
+
+.create-piece-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #232b54;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: #fff;
+    font-weight: bold;
+}
+
+.create-piece-button:hover {
+    background-color: #1e264a;
+}
+
+.open-select-shapes-button {
+    position: absolute;
+    bottom: 70px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #232b54;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    color: #fff;
+    font-weight: bold;
+}
