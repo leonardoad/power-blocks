@@ -228,17 +228,16 @@ export default {
         },
         resetBoard() {
             this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
-            this.gameOver = false;
-            this.highScore = Math.max(this.highScore, this.score);
-            localStorage.setItem('highScore', this.highScore);
+            this.gameOver = false; 
             this.score = 0;
             this.history = []; // Clear history on reset
             this.getRandomShapes();
+            this.saveState();
         },
         addShape(shape, row, col) {
             if (this.checkCollision(shape, row, col))
                 return;
-            this.saveState(); // Save the current state before adding the shape
+            this.saveHistory();
             for (let i = 0; i < shape.length; i++) {
                 for (let j = 0; j < shape[i].length; j++) {
                     if (shape[i][j] === 1) {
@@ -248,12 +247,15 @@ export default {
                 }
             }
             this.removeShape(this.selectedShape);
+
             setTimeout(() => {
                 this.checkRows();
                 this.checkColumns();
                 setTimeout(() => {
                     this.gameOver = this.checkGameOver();
                 }, 1000);
+                
+                this.saveState(); // Save the current state before adding the shape
             }, 500);
         },
         checkCollision(shape, row, col) {
@@ -391,13 +393,26 @@ export default {
         isHoverCell(row, col) {
             return this.hoverCells.some(cell => cell.row === row && cell.col === col);
         },
-        saveState() {
-            // Save the current state of the board and the score
+        saveHistory() {
             this.history.push({
                 board: JSON.parse(JSON.stringify(this.board)),
                 score: this.score,
                 currentShapes: JSON.parse(JSON.stringify(this.currentShapes))
             });
+        },
+        saveState() {
+            // Save the current state of the board and the score
+            const state = {
+                board: JSON.parse(JSON.stringify(this.board)),
+                score: this.score,
+                currentShapes: JSON.parse(JSON.stringify(this.currentShapes)),
+                selectedShape: this.selectedShape,
+                selectedShapeColor: this.selectedShapeColor,
+                history: JSON.parse(JSON.stringify(this.history)),
+                selectedShapes: this.selectedShapes,
+                highScore: this.highScore,
+            };
+            localStorage.setItem('gameState', JSON.stringify(state));
         },
         undoMove() {
             if (this.history.length > 0) {
@@ -416,6 +431,7 @@ export default {
             const customShape = grid.map(row => row.map(cell => (cell ? 1 : 0)));
             this.shapes.custom = customShape;
             this.currentShapes.push('custom');
+            this.saveState();
         },
         handleCustomPieceCancel() {
             this.isCustomPieceCreatorVisible = false;
@@ -426,20 +442,31 @@ export default {
         handleSelectShapesSave(selectedShapes) {
             this.isSelectShapesVisible = false;
             this.selectedShapes = selectedShapes;
-            localStorage.setItem('selectedShapes', JSON.stringify(this.selectedShapes));
             this.getRandomShapes();
+            this.saveState(); 
         },
         handleSelectShapesCancel() {
             this.isSelectShapesVisible = false;
         }
     },
     mounted() {
-        const savedHighScore = localStorage.getItem('highScore');
-        if (savedHighScore !== null) {
-            this.highScore = parseInt(savedHighScore, 10);
+
+        const savedGameState = localStorage.getItem('gameState');
+        if (savedGameState) {
+            const state = JSON.parse(savedGameState);
+            this.board = state.board;
+            this.score = state.score;
+            this.currentShapes = state.currentShapes;
+            this.selectedShape = state.selectedShape;
+            this.selectedShapeColor = state.selectedShapeColor;
+            this.history = state.history;
+            this.selectedShapes = state.selectedShapes;
+            this.highScore = state.highScore;
+        } else {
+            this.selectedShapes = Object.keys(this.shapes);
+            this.resetBoard();
         }
-        this.selectedShapes = localStorage.getItem('selectedShapes') ? JSON.parse(localStorage.getItem('selectedShapes')) : Object.keys(this.shapes);
-        this.resetBoard();
+
     }
 }
 </script>
