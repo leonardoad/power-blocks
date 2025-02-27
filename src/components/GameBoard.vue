@@ -229,6 +229,7 @@ export default {
         resetBoard() {
             this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
             this.gameOver = false; 
+            this.highScore = Math.max(this.score, this.highScore);
             this.score = 0;
             this.history = []; // Clear history on reset
             this.getRandomShapes();
