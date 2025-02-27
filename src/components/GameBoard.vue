@@ -1,6 +1,6 @@
 <template>
     <div class="game-board">
-        <div class="title">Block Blast!</div>
+        <div class="title">Block Blast! {{combo}}</div>
         <ScoreBoard :highScore="highScore" :scoreDisplay="scoreDisplay" :isHighScoreAnimated="isHighScoreAnimated" />
         <GameGrid :board="board" :hoverCells="hoverCells" @dragover="handleDragOver" @drop="handleDrop" ref="gameBoard" />
         <ShapeSelection :shapes="shapes" :currentShapes="currentShapes" @shapeClicked="handleShapeClicked"
@@ -205,7 +205,9 @@ export default {
             history: [], // Add history array
             isCustomPieceCreatorVisible: false, // Add visibility state for custom piece creator
             isSelectShapesVisible: false, // Add visibility state for select shapes
-            selectedShapes: [] // Add selected shapes array
+            selectedShapes: [], // Add selected shapes array
+            combo: 0, // Add combo counter
+            rowsOrColumnsCompleted: false, // Track if any rows/columns were completed in the current round
         };
     },
     watch: {
@@ -252,27 +254,46 @@ export default {
             this.saveState();
         },
         addShape(shape, row, col) {
-            if (this.checkCollision(shape, row, col))
-                return;
+            if (this.checkCollision(shape, row, col)) return;
             this.saveHistory();
+            let shapeBlocks = 0;
             for (let i = 0; i < shape.length; i++) {
                 for (let j = 0; j < shape[i].length; j++) {
                     if (shape[i][j] === 1) {
                         this.board[row + i][col + j] = this.selectedShapeColor;
-                        this.score += 1;
+                        shapeBlocks++;
                     }
                 }
             }
+            this.score += shapeBlocks; // Points for placing the shape
             this.removeShape(this.selectedShape);
 
             setTimeout(() => {
-                this.checkRows();
-                this.checkColumns();
-                setTimeout(() => {
-                    this.gameOver = this.checkGameOver();
-                }, 1000);
+                let completedRows = this.checkRows();
+                let completedColumns = this.checkColumns();
+                let totalCompleted = completedRows + completedColumns;
+
+                if (totalCompleted > 0) {
+                    this.combo++;
+                    this.score += totalCompleted * 10; // Points for completed rows/columns
+                    if (totalCompleted > 1) {
+                        this.score += totalCompleted * 10; // Bonus for multiple rows/columns
+                    }
+                    this.score += this.combo * 10; // Combo bonus
+                    this.rowsOrColumnsCompleted = true; // Mark that rows/columns were completed
+                }
+
+                if (this.currentShapes.length === 0) {
+                    if (!this.rowsOrColumnsCompleted) {
+                        this.combo = 0; // Reset combo if no rows/columns were completed in the last play of the round
+                    }
+                    this.getRandomShapes();
+                }
+
                 
                 this.saveState(); // Save the current state before adding the shape
+
+                this.gameOver = this.checkGameOver();
             }, 500);
         },
         checkCollision(shape, row, col) {
@@ -288,6 +309,7 @@ export default {
             return false;
         },
         checkRows() {
+            let completedRows = 0;
             for (let i = 0; i < this.board.length; i++) {
                 if (this.board[i].every(block => block !== null)) {
                     this.board[i].forEach((block, index) => {
@@ -295,11 +317,13 @@ export default {
                             this.board[i].splice(index, 1, null);
                         }, index * 10);
                     });
-                    this.score += 5 * 8;
+                    completedRows++;
                 }
             }
+            return completedRows;
         },
         checkColumns() {
+            let completedColumns = 0;
             for (let i = 0; i < this.board[0].length; i++) {
                 if (this.board.every(row => row[i] !== null)) {
                     this.board.forEach((block, index) => {
@@ -307,9 +331,10 @@ export default {
                             this.board[index].splice(i, 1, null);
                         }, index * 10);
                     });
-                    this.score += 5 * 8;
+                    completedColumns++;
                 }
             }
+            return completedColumns;
         },
         checkGameOver() {
             //the game is over when there is no space available for the next shape
@@ -369,9 +394,6 @@ export default {
             if (index > -1) {
                 this.currentShapes.splice(index, 1);
             }
-            if (this.currentShapes.length === 0) {
-                this.getRandomShapes();
-            }
         },
         getRandomShapes() {
             //select 3 random shapes from the shapes object and add to the currentShapes array the shapes can be repeated
@@ -383,6 +405,7 @@ export default {
                 this.getRandomShapes();
             }
 
+            this.rowsOrColumnsCompleted = false; // Reset for the new round
         },
         applyCellStyle(block) {
             if (block !== null) {
