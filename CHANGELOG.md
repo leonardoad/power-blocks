@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.2](https://github.com/leonardoad/BlockBlast/compare/v0.1.1...v0.1.2) (2025-02-27)
+
+
+### Features
+
+* add additional line patterns to GameBoard component ([62ca011](https://github.com/leonardoad/BlockBlast/commit/62ca011db3f295d67b8af1793476bd48fabe862d))
+* add score animation feature and enhance scoring logic in GameBoard component ([081f0c6](https://github.com/leonardoad/BlockBlast/commit/081f0c6d001fd3724f49735ad2fca5be74e75b24))
+* implement combo scoring and update ([7f8d7bd](https://github.com/leonardoad/BlockBlast/commit/7f8d7bd35a2a51df58866b94cb3e2a4e25fdf8e6))
+
 ### 0.1.1 (2025-02-27)
 
 
