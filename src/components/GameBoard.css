@@ -213,3 +213,26 @@ body {
     color: #fff;
     font-weight: bold;
 }
+
+.grid-container {
+    position: relative;
+}
+
+.score-animation {
+    position: absolute;
+    font-size: 36px;
+    font-weight: bold;
+    color: green;
+    animation: fadeOut 2s forwards;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}

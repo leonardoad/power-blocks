@@ -2,7 +2,13 @@
     <div class="game-board">
         <div class="title">Block Blast! {{combo}}</div>
         <ScoreBoard :highScore="highScore" :scoreDisplay="scoreDisplay" :isHighScoreAnimated="isHighScoreAnimated" />
-        <GameGrid :board="board" :hoverCells="hoverCells" @dragover="handleDragOver" @drop="handleDrop" ref="gameBoard" />
+        <div class="grid-container">
+            <GameGrid :board="board" :hoverCells="hoverCells" @dragover="handleDragOver" @drop="handleDrop" ref="gameBoard" />
+            <!-- Score animations -->
+            <div v-for="animation in scoreAnimations" :key="animation.id" class="score-animation" :style="getAnimationStyle(animation)">
+                +{{ animation.points }}
+            </div>
+        </div>
         <ShapeSelection :shapes="shapes" :currentShapes="currentShapes" @shapeClicked="handleShapeClicked"
                     @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" />
     
@@ -18,7 +24,6 @@
 
         <CustomPieceCreator :visible="isCustomPieceCreatorVisible" @save="handleCustomPieceSave" @cancel="handleCustomPieceCancel" />
         <SelectShapes :visible="isSelectShapesVisible" :shapes="shapes" :initialSelectedShapes="selectedShapes" @save="handleSelectShapesSave" @cancel="handleSelectShapesCancel" />
-
     </div>
 </template>
 
@@ -208,6 +213,7 @@ export default {
             selectedShapes: [], // Add selected shapes array
             combo: 0, // Add combo counter
             rowsOrColumnsCompleted: false, // Track if any rows/columns were completed in the current round
+            scoreAnimations: [], // Track score animations
         };
     },
     watch: {
@@ -249,6 +255,8 @@ export default {
             this.gameOver = false; 
             this.highScore = Math.max(this.score, this.highScore);
             this.score = 0;
+            this.combo = 0;
+            this.rowsOrColumnsCompleted = false;
             this.history = []; // Clear history on reset
             this.getRandomShapes();
             this.saveState();
@@ -269,18 +277,40 @@ export default {
             this.removeShape(this.selectedShape);
 
             setTimeout(() => {
-                let completedRows = this.checkRows();
-                let completedColumns = this.checkColumns();
+                let { completedRows, rowPositions } = this.checkRows();
+                let { completedColumns, colPositions } = this.checkColumns();
                 let totalCompleted = completedRows + completedColumns;
 
                 if (totalCompleted > 0) {
                     this.combo++;
-                    this.score += totalCompleted * 10; // Points for completed rows/columns
-                    if (totalCompleted > 1) {
-                        this.score += totalCompleted * 10; // Bonus for multiple rows/columns
-                    }
-                    this.score += this.combo * 10; // Combo bonus
+                    const rowPoints = completedRows * 10; // Points for completed rows/columns
+                    const colPoints = completedColumns * 10; // Points for completed columns
+                    const rowColPoints = totalCompleted * 10; // Points for completed rows/columns
+                    const multiBonus = totalCompleted > 1 ? totalCompleted * 10 : 0; // Bonus for multiple rows/columns
+                    const comboBonus = this.combo * 10; // Combo bonus
+                    const totalPoints = rowColPoints + multiBonus + comboBonus;
+
+                    this.score += totalPoints;
                     this.rowsOrColumnsCompleted = true; // Mark that rows/columns were completed
+
+                    // Show score animations for completed rows
+                    if (completedRows > 0) {
+                        if(multiBonus + comboBonus > 0) {
+                            this.showScoreAnimation(multiBonus + comboBonus, rowPositions[0], 0, true);
+                        } else {
+                            this.showScoreAnimation(rowPoints, rowPositions[0], 0, true);
+                        }
+                    }
+
+                    // Show score animations for completed columns
+                    if(completedColumns > 0) {
+                        if(multiBonus + comboBonus > 0) {
+                            this.showScoreAnimation(multiBonus + comboBonus, 0, colPositions[0], false);
+                        } else {
+                            this.showScoreAnimation(colPoints, 0, colPositions[0], false);
+                        }
+                    }
+
                 }
 
                 if (this.currentShapes.length === 0) {
@@ -290,10 +320,9 @@ export default {
                     this.getRandomShapes();
                 }
 
+                this.gameOver = this.checkGameOver();
                 
                 this.saveState(); // Save the current state before adding the shape
-
-                this.gameOver = this.checkGameOver();
             }, 500);
         },
         checkCollision(shape, row, col) {
@@ -309,21 +338,21 @@ export default {
             return false;
         },
         checkRows() {
-            let completedRows = 0;
+            let rowPositions = [];
             for (let i = 0; i < this.board.length; i++) {
                 if (this.board[i].every(block => block !== null)) {
+                    rowPositions.push(i);
                     this.board[i].forEach((block, index) => {
                         setTimeout(() => {
                             this.board[i].splice(index, 1, null);
                         }, index * 10);
                     });
-                    completedRows++;
                 }
             }
-            return completedRows;
+            return { completedRows: rowPositions.length, rowPositions };
         },
         checkColumns() {
-            let completedColumns = 0;
+            let colPositions = [];
             for (let i = 0; i < this.board[0].length; i++) {
                 if (this.board.every(row => row[i] !== null)) {
                     this.board.forEach((block, index) => {
@@ -331,10 +360,10 @@ export default {
                             this.board[index].splice(i, 1, null);
                         }, index * 10);
                     });
-                    completedColumns++;
+                    colPositions.push(i);
                 }
             }
-            return completedColumns;
+            return { completedColumns: colPositions.length, colPositions };
         },
         checkGameOver() {
             //the game is over when there is no space available for the next shape
@@ -437,6 +466,8 @@ export default {
             this.history.push({
                 board: JSON.parse(JSON.stringify(this.board)),
                 score: this.score,
+                combo: this.combo,
+                rowsOrColumnsCompleted: this.rowsOrColumnsCompleted,
                 currentShapes: JSON.parse(JSON.stringify(this.currentShapes))
             });
         },
@@ -451,6 +482,8 @@ export default {
                 history: JSON.parse(JSON.stringify(this.history)),
                 selectedShapes: this.selectedShapes,
                 highScore: this.highScore,
+                combo: this.combo,
+                rowsOrColumnsCompleted: this.rowsOrColumnsCompleted
             };
             localStorage.setItem('gameState', JSON.stringify(state));
         },
@@ -461,6 +494,8 @@ export default {
                 this.score = previousState.score;
                 this.currentShapes = previousState.currentShapes;
                 this.gameOver = false;
+                this.combo = previousState.combo;
+                this.rowsOrColumnsCompleted = previousState.rowsOrColumnsCompleted;
             }
         },
         openCustomPieceCreator() {
@@ -487,7 +522,31 @@ export default {
         },
         handleSelectShapesCancel() {
             this.isSelectShapesVisible = false;
-        }
+        },
+        showScoreAnimation(points, row, col, isRow) {
+            const animation = {
+                points,
+                row,
+                col,
+                isRow,
+                id: Date.now() // Unique ID for each animation
+            };
+            this.scoreAnimations.push(animation);
+            setTimeout(() => {
+                this.scoreAnimations = this.scoreAnimations.filter(anim => anim.id !== animation.id);
+            }, 2000); // Duration of the animation
+        },
+        getAnimationStyle(animation) {
+            const size = 40; // Assuming each cell is 40x40 pixels
+            const top = animation.isRow ? ((animation.row) * size) + (size / 2) : size * 5;
+            const left = animation.isRow ? size * 5 : ((animation.col + 1)  * size) + (size / 2);
+            return {
+                top: `${top}px`,
+                left: `${left}px`,
+                transition: 'transform 0.5s, opacity 0.5s',
+                opacity: 1,
+            };
+        },
     },
     mounted() {
 
@@ -502,6 +561,8 @@ export default {
             this.history = state.history;
             this.selectedShapes = state.selectedShapes;
             this.highScore = state.highScore;
+            this.combo = state.combo;
+            this.rowsOrColumnsCompleted = state.rowsOrColumnsCompleted;
         } else {
             this.selectedShapes = Object.keys(this.shapes);
             this.resetBoard();
@@ -510,4 +571,3 @@ export default {
     }
 }
 </script>
-
