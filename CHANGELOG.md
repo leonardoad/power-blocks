@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.3](https://github.com/leonardoad/BlockBlast/compare/v0.1.2...v0.1.3) (2025-02-27)
+
+
+### Bug Fixes
+
+* update game over logic timing and remove combo display from title ([087d252](https://github.com/leonardoad/BlockBlast/commit/087d252afc0073835475ffc27090d8b5b602a350))
+
 ### [0.1.2](https://github.com/leonardoad/BlockBlast/compare/v0.1.1...v0.1.2) (2025-02-27)
 
 
