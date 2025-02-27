@@ -1,6 +1,6 @@
 <template>
     <div class="game-board">
-        <div class="title">Block Blast! {{combo}}</div>
+        <div class="title">Block Blast!</div>
         <ScoreBoard :highScore="highScore" :scoreDisplay="scoreDisplay" :isHighScoreAnimated="isHighScoreAnimated" />
         <div class="grid-container">
             <GameGrid :board="board" :hoverCells="hoverCells" @dragover="handleDragOver" @drop="handleDrop" ref="gameBoard" />
@@ -320,10 +320,13 @@ export default {
                     this.getRandomShapes();
                 }
 
-                this.gameOver = this.checkGameOver();
-                
-                this.saveState(); // Save the current state before adding the shape
             }, 500);
+
+            setTimeout(() => {
+                this.gameOver = this.checkGameOver();
+                this.saveState(); // Save the current state after removing the completed rows/columns
+            }, 1000);
+            
         },
         checkCollision(shape, row, col) {
             for (let i = 0; i < shape.length; i++) {
