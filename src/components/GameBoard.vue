@@ -198,9 +198,10 @@ export default {
                 ],
 
             },
-            powers: ['bomb', 'fill-bomb', 'remove-row', 'remove-column', 'fill-row', 'fill-column', 'cross-bomb','cross-fill'],
+            //powers: ['bomb', 'fill-bomb', 'remove-row', 'remove-column', 'fill-row', 'fill-column', 'cross-bomb','cross-fill', 'fill-all'],
+            powers: ['fill-all'],
             colors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'],
-            currentShapes: [],
+            currentShapes: [],  
             selectedShape: '',
             selectedShapeColor: '',
             selectedShapePower: '',
@@ -286,7 +287,9 @@ export default {
 
             setTimeout(() => {
                 let { completedRows, rowPositions } = this.checkRows();
+                console.log(`completedRows, rowPositions`,completedRows, rowPositions);
                 let { completedColumns, colPositions } = this.checkColumns();
+                console.log(`completedColumns, colPositions`,completedColumns, colPositions);
                 let totalCompleted = completedRows + completedColumns;
 
                 if (totalCompleted > 0) {
@@ -322,25 +325,23 @@ export default {
                 }
                 setTimeout(() => {
                     if (this.checkBoardClear()) {
-                        this.score += 300; // Bonus for clearing the board
+                        this.score += 300; // Bonus for clearing the board 
                         this.showScoreAnimation(300, 4, 4, true, "Clear");
                     }
                 }, 500);
 
+            }, 500);
 
+            setTimeout(() => { 
                 if (this.currentShapes.length === 0) {
                     if (!this.rowsOrColumnsCompleted) {
                         this.combo = 0; // Reset combo if no rows/columns were completed in the last play of the round
                     }
                     this.getRandomShapes();
                 }
-
-            }, 500);
-
-            setTimeout(() => {
                 this.gameOver = this.checkGameOver();
                 this.saveState(); // Save the current state after removing the completed rows/columns
-            }, 1000);
+            }, 2000);
             
         },
         applyPowerEffect(power, row, col){
@@ -356,6 +357,9 @@ export default {
                     break;
                 case 'cross-fill':
                     this.applyCrossFillPower(row, col);
+                    break;
+                    case 'fill-all':
+                    this.applyFillAllPower();
                     break;
                 case 'remove-row':
                     this.applyRemoveRowPower(row);
@@ -387,6 +391,9 @@ export default {
             for (let j = 0; j < this.board[0].length; j++) {
                 this.board[row][j] = null;
             }
+        },
+        applyFillAllPower() {
+            this.board = this.board.map(row => row.map(cell => (cell === null ? this.selectedShapeColor : cell)));
         },
         applyCrossFillPower(row, col) {
             for (let i = 0; i < this.board.length; i++) {
