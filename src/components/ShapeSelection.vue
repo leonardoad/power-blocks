@@ -2,7 +2,7 @@
   <div class="shape-selection">
     <div v-for="(shape, index) in currentShapes" :key="`${shape.name}-${index}`">
       <Block :shape="shapes[shape.name]" :name="shape.name" :index="index" @shapeClicked="handleShapeClicked"
-             @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" :color="shape.color" />
+             @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" :color="shape.color" :power="shape.power" />
     </div>
   </div>
 </template>

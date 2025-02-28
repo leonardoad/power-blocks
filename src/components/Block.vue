@@ -14,6 +14,7 @@
           </div>
       </div>
   </div>
+  {{ power }}
 </template>
 
 <script>
@@ -42,8 +43,12 @@ export default {
     color: {
       type: String,
       required: true
+    },
+    power: {
+      type: String,
+      required: false,
+      default: ''
     }
-
   },
   data() {
     return {
@@ -79,7 +84,7 @@ export default {
     },
     handleMouseDown() {
       if (this.disableDragging) return;
-      this.$emit('shapeClicked', {name: this.name, color: this.color});
+      this.$emit('shapeClicked', {name: this.name, color: this.color, power: this.power});
     },
     handleDragStart(event) {
       if (this.disableDragging) return;
@@ -101,7 +106,7 @@ export default {
       this.touchCurrentY = (event.touches[0].clientY - this.offsetY) - this.shape.length * 90;
 
       this.isDragging = true;
-      this.$emit('shapeClicked', {name: this.name, color: this.color});
+      this.$emit('shapeClicked', {name: this.name, color: this.color, power: this.power});
     },
     handleTouchMove(event) {
       if (this.disableDragging) return;

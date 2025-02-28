@@ -198,11 +198,12 @@ export default {
                 ],
 
             },
-            powers: ['bomb', 'remove-row', 'remove-column', 'fill-row', 'fill-column'],
+            powers: ['bomb', 'fill-bomb', 'remove-row', 'remove-column', 'fill-row', 'fill-column', 'cross-bomb','cross-fill'],
             colors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'],
             currentShapes: [],
             selectedShape: '',
             selectedShapeColor: '',
+            selectedShapePower: '',
             gameOver: false,
             score: 0,
             scoreDisplay: 0,
@@ -266,6 +267,7 @@ export default {
         addShape(shape, row, col) {
             if (this.checkCollision(shape, row, col)) return;
             this.saveHistory();
+
             let shapeBlocks = 0;
             for (let i = 0; i < shape.length; i++) {
                 for (let j = 0; j < shape[i].length; j++) {
@@ -277,6 +279,10 @@ export default {
             }
             this.score += shapeBlocks; // Points for placing the shape
             this.removeShape(this.selectedShape);
+            
+            if (this.selectedShapePower) {
+                this.applyPowerEffect(this.selectedShapePower, row, col);
+            }
 
             setTimeout(() => {
                 let { completedRows, rowPositions } = this.checkRows();
@@ -337,6 +343,80 @@ export default {
             }, 1000);
             
         },
+        applyPowerEffect(power, row, col){
+            switch(power){
+                case 'bomb':
+                    this.applyBombPower(row, col);
+                    break;
+                case 'fill-bomb':
+                    this.applyFillBombPower(row, col);
+                    break;
+                case 'cross-bomb':
+                    this.applyCrossBombPower(row, col);
+                    break;
+                case 'cross-fill':
+                    this.applyCrossFillPower(row, col);
+                    break;
+                case 'remove-row':
+                    this.applyRemoveRowPower(row);
+                    break;
+                case 'remove-column':
+                    this.applyRemoveColumnPower(col);
+                    break;
+                case 'fill-row':
+                    this.applyFillRowPower(row);
+                    break;
+                case 'fill-column':
+                    this.applyFillColumnPower(col);
+                    break;
+            }
+        },
+        applyBombPower(row, col) {
+            for (let i = row - 1; i <= row + 1; i++) {
+                for (let j = col - 1; j <= col + 1; j++) {
+                    if (this.board[i] && this.board[i][j] !== undefined) {
+                        this.board[i][j] = null;
+                    }
+                }
+            }
+        },
+        applyCrossBombPower(row, col) {
+            for (let i = 0; i < this.board.length; i++) {
+                this.board[i][col] = null;
+            }
+            for (let j = 0; j < this.board[0].length; j++) {
+                this.board[row][j] = null;
+            }
+        },
+        applyCrossFillPower(row, col) {
+            for (let i = 0; i < this.board.length; i++) {
+                this.board[i][col] = this.selectedShapeColor;
+            }
+            for (let j = 0; j < this.board[0].length; j++) {
+                this.board[row][j] = this.selectedShapeColor;
+            }
+        },
+        applyFillBombPower(row, col) {
+            for (let i = row - 1; i <= row + 1; i++) {
+                for (let j = col - 1; j <= col + 1; j++) {
+                    if (this.board[i] && this.board[i][j] !== undefined) {
+                        this.board[i][j] = this.selectedShapeColor;
+                    }
+                }
+            }
+        },
+        applyRemoveRowPower(row) {
+            this.removeRow(row);
+        },
+        applyFillRowPower(row) {
+            this.board[row].fill(this.selectedShapeColor);
+        },
+        applyFillColumnPower(col) {
+            this.board.forEach(row => row[col] = this.selectedShapeColor);
+        },
+        applyRemoveColumnPower(col) {
+            this.removeColumn(col);
+        },
         checkBoardClear() {
             return this.board.every(row => row.every(block => block === null));
         },
@@ -357,28 +437,34 @@ export default {
             for (let i = 0; i < this.board.length; i++) {
                 if (this.board[i].every(block => block !== null)) {
                     rowPositions.push(i);
-                    this.board[i].forEach((block, index) => {
-                        setTimeout(() => {
-                            this.board[i].splice(index, 1, null);
-                        }, index * 10);
-                    });
+                   this.removeRow(i);
                 }
             }
             return { completedRows: rowPositions.length, rowPositions };
+        },
+        removeRow(row) {
+            this.board[row].forEach((block, index) => {
+                setTimeout(() => {
+                    this.board[row].splice(index, 1, null);
+                }, index * 10);
+            });
         },
         checkColumns() {
             let colPositions = [];
             for (let i = 0; i < this.board[0].length; i++) {
                 if (this.board.every(row => row[i] !== null)) {
-                    this.board.forEach((block, index) => {
-                        setTimeout(() => {
-                            this.board[index].splice(i, 1, null);
-                        }, index * 10);
-                    });
+                    this.removeColumn(i);
                     colPositions.push(i);
                 }
             }
             return { completedColumns: colPositions.length, colPositions };
+        },
+        removeColumn(col) {
+            this.board.forEach((row, index) => {
+                setTimeout(() => {
+                    this.board[index].splice(col, 1, null);
+                }, index * 10);
+            });
         },
         checkGameOver() {
             //the game is over when there is no space available for the next shape
@@ -396,6 +482,7 @@ export default {
         handleShapeClicked(event) {
             this.selectedShape = event.name; // get the shape name from event
             this.selectedShapeColor = event.color; // store color for future use
+            this.selectedShapePower = event.power; // store power for future use
         },
         handleShapeDragged(event) {
             const offsetX = parseFloat(event.offsetX);
@@ -450,7 +537,9 @@ export default {
             });
 
             this.currentShapes.forEach(shape => {
-                shape.power = this.powers[Math.floor(Math.random() * this.powers.length)];
+                if(shape.name === 'single'){
+                    shape.power = this.powers[Math.floor(Math.random() * this.powers.length)];
+                }
             });
 
             if (this.checkGameOver()) {
