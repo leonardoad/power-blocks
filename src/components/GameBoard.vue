@@ -1,6 +1,6 @@
 <template>
     <div class="game-board">
-        <div class="title">Block Blast!</div>
+        <div class="title">Power Blocks!!</div>
         <ScoreBoard :highScore="highScore" :scoreDisplay="scoreDisplay" :isHighScoreAnimated="isHighScoreAnimated" />
         <div class="grid-container">
             <GameGrid :board="board" :hoverCells="hoverCells" @dragover="handleDragOver" @drop="handleDrop" ref="gameBoard" />
@@ -199,7 +199,7 @@ export default {
 
             },
             //powers: ['bomb', 'fill-bomb', 'remove-row', 'remove-column', 'fill-row', 'fill-column', 'cross-bomb','cross-fill', 'fill-all'],
-            powers: ['fill-all'],
+            powers: ['fill-all', 'fill-bomb','fill-row', 'fill-column', 'cross-fill'],
             colors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'],
             currentShapes: [],  
             selectedShape: '',
@@ -397,17 +397,23 @@ export default {
         },
         applyCrossFillPower(row, col) {
             for (let i = 0; i < this.board.length; i++) {
-                this.board[i][col] = this.selectedShapeColor;
+                if (this.board[i][col] === null) {
+                    this.board[i][col] = this.selectedShapeColor;
+                }
             }
             for (let j = 0; j < this.board[0].length; j++) {
-                this.board[row][j] = this.selectedShapeColor;
+                if (this.board[row][j] === null) {
+                    this.board[row][j] = this.selectedShapeColor;
+                }
             }
         },
         applyFillBombPower(row, col) {
             for (let i = row - 1; i <= row + 1; i++) {
                 for (let j = col - 1; j <= col + 1; j++) {
                     if (this.board[i] && this.board[i][j] !== undefined) {
-                        this.board[i][j] = this.selectedShapeColor;
+                        if(this.board[i][j] === null){
+                            this.board[i][j] = this.selectedShapeColor;
+                        }
                     }
                 }
             }
@@ -416,10 +422,10 @@ export default {
             this.removeRow(row);
         },
         applyFillRowPower(row) {
-            this.board[row].fill(this.selectedShapeColor);
+            this.board[row] = this.board[row].map(cell => (cell === null ? this.selectedShapeColor : cell));
         },
         applyFillColumnPower(col) {
-            this.board.forEach(row => row[col] = this.selectedShapeColor);
+            this.board.forEach(row => row[col] = row[col] === null ? this.selectedShapeColor : row[col]);
         },
         applyRemoveColumnPower(col) {
             this.removeColumn(col);
