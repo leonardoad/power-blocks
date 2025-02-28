@@ -6,7 +6,7 @@
             <GameGrid :board="board" :hoverCells="hoverCells" @dragover="handleDragOver" @drop="handleDrop" ref="gameBoard" />
             <!-- Score animations -->
             <div v-for="animation in scoreAnimations" :key="animation.id" class="score-animation" :style="getAnimationStyle(animation)">
-                +{{ animation.points }}
+                +{{ animation.points }} <br> <span class="score-text">{{ animation.text }}</span>
             </div>
         </div>
         <ShapeSelection :shapes="shapes" :currentShapes="currentShapes" @shapeClicked="handleShapeClicked"
@@ -296,22 +296,29 @@ export default {
                     // Show score animations for completed rows
                     if (completedRows > 0) {
                         if(multiBonus + comboBonus > 0) {
-                            this.showScoreAnimation(multiBonus + comboBonus, rowPositions[0], 0, true);
+                            this.showScoreAnimation(multiBonus + comboBonus, rowPositions[0], 0, true, "Combo");
                         } else {
-                            this.showScoreAnimation(rowPoints, rowPositions[0], 0, true);
+                            this.showScoreAnimation(rowPoints, rowPositions[0], 0, true, "Good");
                         }
                     }
 
                     // Show score animations for completed columns
                     if(completedColumns > 0) {
                         if(multiBonus + comboBonus > 0) {
-                            this.showScoreAnimation(multiBonus + comboBonus, 0, colPositions[0], false);
+                            this.showScoreAnimation(multiBonus + comboBonus, 0, colPositions[0], false, "Combo");
                         } else {
-                            this.showScoreAnimation(colPoints, 0, colPositions[0], false);
+                            this.showScoreAnimation(colPoints, 0, colPositions[0], false, "Good");
                         }
                     }
-
+                    
                 }
+                setTimeout(() => {
+                    if (this.checkBoardClear()) {
+                        this.score += 300; // Bonus for clearing the board
+                        this.showScoreAnimation(300, 4, 4, true, "Clear");
+                    }
+                }, 500);
+
 
                 if (this.currentShapes.length === 0) {
                     if (!this.rowsOrColumnsCompleted) {
@@ -327,6 +334,9 @@ export default {
                 this.saveState(); // Save the current state after removing the completed rows/columns
             }, 1000);
             
+        },
+        checkBoardClear() {
+            return this.board.every(row => row.every(block => block === null));
         },
         checkCollision(shape, row, col) {
             for (let i = 0; i < shape.length; i++) {
@@ -526,12 +536,13 @@ export default {
         handleSelectShapesCancel() {
             this.isSelectShapesVisible = false;
         },
-        showScoreAnimation(points, row, col, isRow) {
+        showScoreAnimation(points, row, col, isRow, text) {
             const animation = {
                 points,
                 row,
                 col,
                 isRow,
+                text,
                 id: Date.now() // Unique ID for each animation
             };
             this.scoreAnimations.push(animation);
@@ -541,8 +552,8 @@ export default {
         },
         getAnimationStyle(animation) {
             const size = 40; // Assuming each cell is 40x40 pixels
-            const top = animation.isRow ? ((animation.row) * size) + (size / 2) : size * 5;
-            const left = animation.isRow ? size * 5 : ((animation.col + 1)  * size) + (size / 2);
+            const top = animation.isRow ? ((animation.row) * size) : size * 4;
+            const left = animation.isRow ? size * 4 : ((animation.col + 1)  * size);
             return {
                 top: `${top}px`,
                 left: `${left}px`,

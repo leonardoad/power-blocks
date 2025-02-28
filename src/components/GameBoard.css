@@ -220,11 +220,19 @@ body {
 
 .score-animation {
     position: absolute;
-    font-size: 36px;
+    font-size: 2rem;
     font-weight: bold;
     color: green;
     animation: fadeOut 2s forwards;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.score-text {
+    font-size: 1em;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px solid #fff;
+    border-radius: 5px;
 }
 
 @keyframes fadeOut {
