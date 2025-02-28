@@ -1,7 +1,7 @@
 <template>
   <div class="grid" @dragover.prevent="handleDragOver" @drop="handleDrop" ref="gameBoard">
-    <div class="row" v-for="(row, rowIndex) in board" :key="rowIndex">
-      <div class="cell" v-for="(block, blockIndex) in row" :key="blockIndex"
+    <div class="row" v-for="(row, rowIndex) in board" :key="`grid-${rowIndex}`">
+      <div class="cell" v-for="(block, blockIndex) in row" :key="`cell-${rowIndex}-${blockIndex}`"
            :class="{ 'filled-cell': block, 'hover-cell': isHoverCell(rowIndex, blockIndex) }"
            :style="applyCellStyle(block)">
       </div>

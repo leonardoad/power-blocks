@@ -198,6 +198,8 @@ export default {
                 ],
 
             },
+            powers: ['bomb', 'remove-row', 'remove-column', 'fill-row', 'fill-column'],
+            colors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'],
             currentShapes: [],
             selectedShape: '',
             selectedShapeColor: '',
@@ -381,9 +383,9 @@ export default {
         checkGameOver() {
             //the game is over when there is no space available for the next shape
             for (let shape of this.currentShapes) {
-                for (let row = 0; row <= this.board.length - this.shapes[shape].length; row++) {
-                    for (let col = 0; col <= this.board[0].length - this.shapes[shape][0].length; col++) {
-                        if (!this.checkCollision(this.shapes[shape], row, col)) {
+                for (let row = 0; row <= this.board.length - this.shapes[shape.name].length; row++) {
+                    for (let col = 0; col <= this.board[0].length - this.shapes[shape.name][0].length; col++) {
+                        if (!this.checkCollision(this.shapes[shape.name], row, col)) {
                             return false;
                         }
                     }
@@ -432,7 +434,7 @@ export default {
             this.clearHoverCells();
         },
         removeShape(name) {
-            const index = this.currentShapes.indexOf(name);
+            const index = this.currentShapes.findIndex(shape => shape.name === name);
             if (index > -1) {
                 this.currentShapes.splice(index, 1);
             }
@@ -440,7 +442,15 @@ export default {
         getRandomShapes() {
             //select 3 random shapes from the shapes object and add to the currentShapes array the shapes can be repeated
             this.currentShapes = Array.from({ length: 3 }, () => {
-                return this.selectedShapes[Math.floor(Math.random() * this.selectedShapes.length)];
+                return { name: this.selectedShapes[Math.floor(Math.random() * this.selectedShapes.length)] };
+            });
+
+            this.currentShapes.forEach(shape => {
+                shape.color = this.colors[Math.floor(Math.random() * this.colors.length)];
+            });
+
+            this.currentShapes.forEach(shape => {
+                shape.power = this.powers[Math.floor(Math.random() * this.powers.length)];
             });
 
             if (this.checkGameOver()) {
@@ -518,7 +528,7 @@ export default {
             this.isCustomPieceCreatorVisible = false;
             const customShape = grid.map(row => row.map(cell => (cell ? 1 : 0)));
             this.shapes.custom = customShape;
-            this.currentShapes.push('custom');
+            this.currentShapes.push({ name: 'custom', color: '#'+Math.floor(Math.random()*16777215).toString(16) });
             this.saveState();
         },
         handleCustomPieceCancel() {

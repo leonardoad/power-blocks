@@ -38,7 +38,12 @@ export default {
     disableDragging: {
       type: Boolean,
       default: false
+    },
+    color: {
+      type: String,
+      required: true
     }
+
   },
   data() {
     return {
@@ -48,7 +53,6 @@ export default {
       touchCurrentX: 0,
       touchCurrentY: 0,
       isDragging: false,
-      color: this.getRandomColor(),
     };
   },
   computed: {
@@ -111,14 +115,6 @@ export default {
       this.isDragging = false;
       const touch = event.changedTouches[0];
       this.$emit('shapeDropped', { name: this.name, clientX: touch.clientX, clientY: touch.clientY - (this.shape.length * 90), offsetX: this.offsetX, offsetY: this.offsetY});
-    },
-    getRandomColor() {
-      const letters = '0123456789ABCDEF';
-      let color = '#';
-      for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-      }
-      return color;
     },
   },
 }

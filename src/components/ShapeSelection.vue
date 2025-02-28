@@ -1,8 +1,8 @@
 <template>
   <div class="shape-selection">
-    <div v-for="(shape, index) in currentShapes" :key="index">
-      <Block :shape="shapes[shape]" :name="shape" :index="index" @shapeClicked="handleShapeClicked"
-             @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" />
+    <div v-for="(shape, index) in currentShapes" :key="`${shape.name}-${index}`">
+      <Block :shape="shapes[shape.name]" :name="shape.name" :index="index" @shapeClicked="handleShapeClicked"
+             @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" :color="shape.color" />
     </div>
   </div>
 </template>
