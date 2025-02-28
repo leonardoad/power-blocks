@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.5](https://github.com/leonardoad/BlockBlast/compare/v0.1.4...v0.1.5) (2025-02-28)
+
+
+### Features
+
+* implement 'fill-all' power effect and adjust game state handling ([9fd5bd4](https://github.com/leonardoad/BlockBlast/commit/9fd5bd490d3354c7ab7841b632fde3245cec86e1))
+* update game title and enhance power effects handling in GameBoard ([93c64de](https://github.com/leonardoad/BlockBlast/commit/93c64de3bb2ef531487beeb57f56a53691e86baf))
+
 ### [0.1.4](https://github.com/leonardoad/BlockBlast/compare/v0.1.3...v0.1.4) (2025-02-28)
 
 
