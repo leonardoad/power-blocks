@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.4](https://github.com/leonardoad/BlockBlast/compare/v0.1.3...v0.1.4) (2025-02-28)
+
+
+### Features
+
+* add power attributes to shapes and implement power effects in GameBoard ([20174ce](https://github.com/leonardoad/BlockBlast/commit/20174ce6702dffeff63bb4e349c982676f01c64d))
+* enhance score animation display and add board clear bonus logic ([0b687e7](https://github.com/leonardoad/BlockBlast/commit/0b687e7c4a7ec7daf62e4319ff0b3273e7229f77))
+* enhance shape handling with color and power attributes in GameBoard and Block components ([13f4e2c](https://github.com/leonardoad/BlockBlast/commit/13f4e2c5aa435330e9a216a5487861cc4e8eb951))
+
 ### [0.1.3](https://github.com/leonardoad/BlockBlast/compare/v0.1.2...v0.1.3) (2025-02-27)
 
 
