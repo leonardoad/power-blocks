@@ -283,6 +283,7 @@ export default {
                 }
             }
             this.score += shapeBlocks; // Points for placing the shape
+            this.removeShape(this.selectedShape);
 
             if (this.selectedShapePower) {
                 this.applyPowerEffect(this.selectedShapePower, row, col);
@@ -332,10 +333,21 @@ export default {
             }
 
             
-            this.removeShape(this.selectedShape);
+            if (this.currentShapes.length === 0) {
+                if (!this.rowsOrColumnsCompleted) {
+                    this.combo = 0; // Reset combo if no rows/columns were completed in the last play of the round
+                }
+                
+                setTimeout(() => {
+                    this.getRandomShapes();
+                }, 600); // Delay to allow the animations to complete
 
-            this.gameOver = this.checkGameOver();
-            this.saveState(); // Save the current state after removing the completed rows/columns
+            }
+            setTimeout(() => {
+
+                this.gameOver = this.checkGameOver();
+                this.saveState(); // Save the current state after adding the shape
+            }, 1000); // Delay to allow the animations to complete
 
         },
         updateBoard(rowPositions, colPositions) {
@@ -459,9 +471,9 @@ export default {
         },
         removeRow(row) {
             this.board[row].forEach((block, index) => {
-                // setTimeout(() => {
+                setTimeout(() => {
                     this.board[row].splice(index, 1, null);
-                // }, index * 10);
+                }, index * 10);
             });
         },
         checkColumns() {
@@ -475,9 +487,9 @@ export default {
         },
         removeColumn(col) {
             this.board.forEach((row, index) => {
-                // setTimeout(() => {
+                setTimeout(() => {
                     this.board[index].splice(col, 1, null);
-                // }, index * 10);
+                }, index * 10);
             });
         },
         checkGameOver() {
@@ -539,12 +551,6 @@ export default {
             if (index > -1) {
                 this.currentShapes.splice(index, 1);
             }
-            if (this.currentShapes.length === 0) {
-                if (!this.rowsOrColumnsCompleted) {
-                    this.combo = 0; // Reset combo if no rows/columns were completed in the last play of the round
-                }
-                this.getRandomShapes();
-            }
         },
         getRandomShapes() {
             //select 3 random shapes from the shapes object and add to the currentShapes array the shapes can be repeated
@@ -561,7 +567,6 @@ export default {
                     shape.power = this.powers[Math.floor(Math.random() * this.powers.length)];
                 }
             });
-
             if (this.checkGameOver()) {
                 this.getRandomShapes();
             }
