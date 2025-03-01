@@ -283,70 +283,69 @@ export default {
                 }
             }
             this.score += shapeBlocks; // Points for placing the shape
-            this.removeShape(this.selectedShape);
 
             if (this.selectedShapePower) {
                 this.applyPowerEffect(this.selectedShapePower, row, col);
             }
 
-            setTimeout(() => {
-                let { completedRows, rowPositions } = this.checkRows();
-                console.log(`completedRows, rowPositions`, completedRows, rowPositions);
-                let { completedColumns, colPositions } = this.checkColumns();
-                console.log(`completedColumns, colPositions`, completedColumns, colPositions);
-                let totalCompleted = completedRows + completedColumns;
+            let { completedRows, rowPositions } = this.checkRows();
+            let { completedColumns, colPositions } = this.checkColumns();
+            let totalCompleted = completedRows + completedColumns;
 
-                if (totalCompleted > 0) {
-                    this.combo++;
-                    const rowPoints = completedRows * 10; // Points for completed rows/columns
-                    const colPoints = completedColumns * 10; // Points for completed columns
-                    const rowColPoints = totalCompleted * 10; // Points for completed rows/columns
-                    const multiBonus = totalCompleted > 1 ? totalCompleted * 10 : 0; // Bonus for multiple rows/columns
-                    const comboBonus = this.combo * 10; // Combo bonus
-                    const totalPoints = rowColPoints + multiBonus + comboBonus;
+            if (totalCompleted > 0) {
+                this.combo++;
+                const rowPoints = completedRows * 10; // Points for completed rows/columns
+                const colPoints = completedColumns * 10; // Points for completed columns
+                const rowColPoints = totalCompleted * 10; // Points for completed rows/columns
+                const multiBonus = totalCompleted > 1 ? totalCompleted * 10 : 0; // Bonus for multiple rows/columns
+                const comboBonus = this.combo * 10; // Combo bonus
+                const totalPoints = rowColPoints + multiBonus + comboBonus;
 
-                    this.score += totalPoints;
-                    this.rowsOrColumnsCompleted = true; // Mark that rows/columns were completed
+                this.score += totalPoints;
+                this.rowsOrColumnsCompleted = true; // Mark that rows/columns were completed
 
-                    // Show score animations for completed rows
-                    if (completedRows > 0) {
-                        if (multiBonus + comboBonus > 0) {
-                            this.showScoreAnimation(multiBonus + comboBonus, rowPositions[0], 0, true, "Combo");
-                        } else {
-                            this.showScoreAnimation(rowPoints, rowPositions[0], 0, true, "Good");
-                        }
+                // Show score animations for completed rows
+                if (completedRows > 0) {
+                    if (multiBonus + comboBonus > 0) {
+                        this.showScoreAnimation(multiBonus + comboBonus, rowPositions[0], 0, true, "Combo");
+                    } else {
+                        this.showScoreAnimation(rowPoints, rowPositions[0], 0, true, "Good");
                     }
-
-                    // Show score animations for completed columns
-                    if (completedColumns > 0) {
-                        if (multiBonus + comboBonus > 0) {
-                            this.showScoreAnimation(multiBonus + comboBonus, 0, colPositions[0], false, "Combo");
-                        } else {
-                            this.showScoreAnimation(colPoints, 0, colPositions[0], false, "Good");
-                        }
-                    }
-
                 }
-                setTimeout(() => {
-                    if (this.checkBoardClear()) {
-                        this.score += 300; // Bonus for clearing the board 
-                        this.showScoreAnimation(300, 4, 4, true, "Clear");
-                    }
-                }, 500);
 
-            }, 500);
-
-            setTimeout(() => {
-                if (this.currentShapes.length === 0) {
-                    if (!this.rowsOrColumnsCompleted) {
-                        this.combo = 0; // Reset combo if no rows/columns were completed in the last play of the round
+                // Show score animations for completed columns
+                if (completedColumns > 0) {
+                    if (multiBonus + comboBonus > 0) {
+                        this.showScoreAnimation(multiBonus + comboBonus, 0, colPositions[0], false, "Combo");
+                    } else {
+                        this.showScoreAnimation(colPoints, 0, colPositions[0], false, "Good");
                     }
-                    this.getRandomShapes();
                 }
-                this.gameOver = this.checkGameOver();
-                this.saveState(); // Save the current state after removing the completed rows/columns
-            }, 2000);
 
+            }
+            
+            this.updateBoard(rowPositions, colPositions);
+
+            if (this.checkBoardClear()) {
+                this.score += 300; // Bonus for clearing the board 
+                this.showScoreAnimation(300, 4, 4, true, "Clear");
+            }
+
+            
+            this.removeShape(this.selectedShape);
+
+            this.gameOver = this.checkGameOver();
+            this.saveState(); // Save the current state after removing the completed rows/columns
+
+        },
+        updateBoard(rowPositions, colPositions) {
+            rowPositions.forEach(row => {
+                this.removeRow(row);
+            });
+            colPositions.forEach(col => {
+                this.removeColumn(col);
+            });
+            
         },
         applyPowerEffect(power, row, col) {
             switch (power) {
@@ -454,23 +453,21 @@ export default {
             for (let i = 0; i < this.board.length; i++) {
                 if (this.board[i].every(block => block !== null)) {
                     rowPositions.push(i);
-                    this.removeRow(i);
                 }
             }
             return { completedRows: rowPositions.length, rowPositions };
         },
         removeRow(row) {
             this.board[row].forEach((block, index) => {
-                setTimeout(() => {
+                // setTimeout(() => {
                     this.board[row].splice(index, 1, null);
-                }, index * 10);
+                // }, index * 10);
             });
         },
         checkColumns() {
             let colPositions = [];
             for (let i = 0; i < this.board[0].length; i++) {
                 if (this.board.every(row => row[i] !== null)) {
-                    this.removeColumn(i);
                     colPositions.push(i);
                 }
             }
@@ -478,9 +475,9 @@ export default {
         },
         removeColumn(col) {
             this.board.forEach((row, index) => {
-                setTimeout(() => {
+                // setTimeout(() => {
                     this.board[index].splice(col, 1, null);
-                }, index * 10);
+                // }, index * 10);
             });
         },
         checkGameOver() {
@@ -541,6 +538,12 @@ export default {
             const index = this.currentShapes.findIndex(shape => shape.name === name);
             if (index > -1) {
                 this.currentShapes.splice(index, 1);
+            }
+            if (this.currentShapes.length === 0) {
+                if (!this.rowsOrColumnsCompleted) {
+                    this.combo = 0; // Reset combo if no rows/columns were completed in the last play of the round
+                }
+                this.getRandomShapes();
             }
         },
         getRandomShapes() {
