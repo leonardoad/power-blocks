@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.6](https://github.com/leonardoad/BlockBlast/compare/v0.1.5...v0.1.6) (2025-03-01)
+
+
+### Features
+
+* add id property to shapes and update shape handling in GameBoard ([3ef30fb](https://github.com/leonardoad/BlockBlast/commit/3ef30fb6cd3d4898c331d792e07dd4da868acb44))
+* display shape name as fallback for power in Block component ([0c7c23f](https://github.com/leonardoad/BlockBlast/commit/0c7c23ff7e67dee182db1e80a2bfcfc14faaec5c))
+* enhance shape removal logic and improve game state updates in GameBoard ([6f13c67](https://github.com/leonardoad/BlockBlast/commit/6f13c67b839a422df3c7fe29b1db7c047bef39fb))
+
 ### [0.1.5](https://github.com/leonardoad/BlockBlast/compare/v0.1.4...v0.1.5) (2025-02-28)
 
 
