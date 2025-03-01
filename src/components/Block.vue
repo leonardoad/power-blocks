@@ -48,6 +48,11 @@ export default {
       type: String,
       required: false,
       default: ''
+    },
+    id: {
+      type: String,
+      required: false,
+      default: ''
     }
   },
   data() {
@@ -84,7 +89,7 @@ export default {
     },
     handleMouseDown() {
       if (this.disableDragging) return;
-      this.$emit('shapeClicked', {name: this.name, color: this.color, power: this.power});
+      this.$emit('shapeClicked', {name: this.name, color: this.color, power: this.power, id: this.id});
     },
     handleDragStart(event) {
       if (this.disableDragging) return;
@@ -106,7 +111,7 @@ export default {
       this.touchCurrentY = (event.touches[0].clientY - this.offsetY) - this.shape.length * 90;
 
       this.isDragging = true;
-      this.$emit('shapeClicked', {name: this.name, color: this.color, power: this.power});
+      this.$emit('shapeClicked', {name: this.name, color: this.color, power: this.power, id: this.id});
     },
     handleTouchMove(event) {
       if (this.disableDragging) return;

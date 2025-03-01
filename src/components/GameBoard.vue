@@ -206,7 +206,12 @@ export default {
             powers: ['fill-all', 'fill-bomb', 'fill-row', 'fill-column', 'cross-fill'],
             colors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'],
             currentShapes: [],
-            selectedShape: '',
+            selectedShape: {
+                name: '',
+                color: '',
+                power: '',
+                id: ''
+            },
             selectedShapeColor: '',
             selectedShapePower: '',
             gameOver: false,
@@ -277,7 +282,7 @@ export default {
             for (let i = 0; i < shape.length; i++) {
                 for (let j = 0; j < shape[i].length; j++) {
                     if (shape[i][j] === 1) {
-                        this.board[row + i][col + j] = this.selectedShapeColor;
+                        this.board[row + i][col + j] = this.selectedShape.color;
                         shapeBlocks++;
                     }
                 }
@@ -285,8 +290,8 @@ export default {
             this.score += shapeBlocks; // Points for placing the shape
             this.removeShape(this.selectedShape);
 
-            if (this.selectedShapePower) {
-                this.applyPowerEffect(this.selectedShapePower, row, col);
+            if (this.selectedShape.power) {
+                this.applyPowerEffect(this.selectedShape.power, row, col);
             }
 
             let { completedRows, rowPositions } = this.checkRows();
@@ -327,10 +332,6 @@ export default {
             
             this.updateBoard(rowPositions, colPositions);
 
-            if (this.checkBoardClear()) {
-                this.score += 300; // Bonus for clearing the board 
-                this.showScoreAnimation(300, 4, 4, true, "Clear");
-            }
 
             
             if (this.currentShapes.length === 0) {
@@ -357,6 +358,13 @@ export default {
             colPositions.forEach(col => {
                 this.removeColumn(col);
             });
+            
+            setTimeout(() => {
+                if (this.checkBoardClear()) {
+                    this.score += 300; // Bonus for clearing the board 
+                    this.showScoreAnimation(300, 4, 4, true, "Clear");
+                }
+            }, 500); // Delay to allow the animations to complete
             
         },
         applyPowerEffect(power, row, col) {
@@ -408,17 +416,17 @@ export default {
             }
         },
         applyFillAllPower() {
-            this.board = this.board.map(row => row.map(cell => (cell === null ? this.selectedShapeColor : cell)));
+            this.board = this.board.map(row => row.map(cell => (cell === null ? this.selectedShape.color : cell)));
         },
         applyCrossFillPower(row, col) {
             for (let i = 0; i < this.board.length; i++) {
                 if (this.board[i][col] === null) {
-                    this.board[i][col] = this.selectedShapeColor;
+                    this.board[i][col] = this.selectedShape.color;
                 }
             }
             for (let j = 0; j < this.board[0].length; j++) {
                 if (this.board[row][j] === null) {
-                    this.board[row][j] = this.selectedShapeColor;
+                    this.board[row][j] = this.selectedShape.color;
                 }
             }
         },
@@ -427,7 +435,7 @@ export default {
                 for (let j = col - 1; j <= col + 1; j++) {
                     if (this.board[i] && this.board[i][j] !== undefined) {
                         if (this.board[i][j] === null) {
-                            this.board[i][j] = this.selectedShapeColor;
+                            this.board[i][j] = this.selectedShape.color;
                         }
                     }
                 }
@@ -437,10 +445,10 @@ export default {
             this.removeRow(row);
         },
         applyFillRowPower(row) {
-            this.board[row] = this.board[row].map(cell => (cell === null ? this.selectedShapeColor : cell));
+            this.board[row] = this.board[row].map(cell => (cell === null ? this.selectedShape.color : cell));
         },
         applyFillColumnPower(col) {
-            this.board.forEach(row => row[col] = row[col] === null ? this.selectedShapeColor : row[col]);
+            this.board.forEach(row => row[col] = row[col] === null ? this.selectedShape.color : row[col]);
         },
         applyRemoveColumnPower(col) {
             this.removeColumn(col);
@@ -506,9 +514,7 @@ export default {
             return true;
         },
         handleShapeClicked(event) {
-            this.selectedShape = event.name; // get the shape name from event
-            this.selectedShapeColor = event.color; // store color for future use
-            this.selectedShapePower = event.power; // store power for future use
+            this.selectedShape = { name: event.name, color: event.color, power: event.power, id: event.id }; // store shape details
         },
         handleShapeDragged(event) {
             const offsetX = parseFloat(event.offsetX);
@@ -519,7 +525,7 @@ export default {
             const row = Math.floor(dropY / 40); // Using dropY for row calculation
             const col = Math.floor(dropX / 40); // Using dropX for column calculation
 
-            this.updateHoverCells(this.shapes[this.selectedShape], row, col);
+            this.updateHoverCells(this.shapes[this.selectedShape.name], row, col);
         },
         handleShapeDropped(event) {
             const offsetX = parseFloat(event.offsetX);
@@ -530,7 +536,7 @@ export default {
             const row = Math.floor(dropY / 40); // Using dropY for row calculation
             const col = Math.floor(dropX / 40); // Using dropX for column calculation
 
-            this.addShape(this.shapes[this.selectedShape], row, col);
+            this.addShape(this.shapes[this.selectedShape.name], row, col);
             this.clearHoverCells();
         },
         handleDrop(event) {
@@ -546,8 +552,8 @@ export default {
             this.addShape(this.shapes[name], row, col);
             this.clearHoverCells();
         },
-        removeShape(name) {
-            const index = this.currentShapes.findIndex(shape => shape.name === name);
+        removeShape(shape) {
+            const index = this.currentShapes.findIndex(s => s.id === shape.id);
             if (index > -1) {
                 this.currentShapes.splice(index, 1);
             }
@@ -555,7 +561,8 @@ export default {
         getRandomShapes() {
             //select 3 random shapes from the shapes object and add to the currentShapes array the shapes can be repeated
             this.currentShapes = Array.from({ length: 3 }, () => {
-                return { name: this.selectedShapes[Math.floor(Math.random() * this.selectedShapes.length)] };
+                const shapeName = this.selectedShapes[Math.floor(Math.random() * this.selectedShapes.length)];
+                return { name: shapeName, id: Date.now() + Math.random() };
             });
 
             this.currentShapes.forEach(shape => {
@@ -615,7 +622,6 @@ export default {
                 score: this.score,
                 currentShapes: JSON.parse(JSON.stringify(this.currentShapes)),
                 selectedShape: this.selectedShape,
-                selectedShapeColor: this.selectedShapeColor,
                 history: JSON.parse(JSON.stringify(this.history)),
                 selectedShapes: this.selectedShapes,
                 highScore: this.highScore,
@@ -695,7 +701,6 @@ export default {
             this.score = state.score;
             this.currentShapes = state.currentShapes;
             this.selectedShape = state.selectedShape;
-            this.selectedShapeColor = state.selectedShapeColor;
             this.history = state.history;
             this.selectedShapes = state.selectedShapes;
             this.highScore = state.highScore;
