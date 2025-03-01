@@ -3,15 +3,17 @@
         <div class="title">Power Blocks!!</div>
         <ScoreBoard :highScore="highScore" :scoreDisplay="scoreDisplay" :isHighScoreAnimated="isHighScoreAnimated" />
         <div class="grid-container">
-            <GameGrid :board="board" :hoverCells="hoverCells" @dragover="handleDragOver" @drop="handleDrop" ref="gameBoard" />
+            <GameGrid :board="board" :hoverCells="hoverCells" @dragover="handleDragOver" @drop="handleDrop"
+                ref="gameBoard" />
             <!-- Score animations -->
-            <div v-for="animation in scoreAnimations" :key="animation.id" class="score-animation" :style="getAnimationStyle(animation)">
+            <div v-for="animation in scoreAnimations" :key="animation.id" class="score-animation"
+                :style="getAnimationStyle(animation)">
                 +{{ animation.points }} <br> <span class="score-text">{{ animation.text }}</span>
             </div>
         </div>
         <ShapeSelection :shapes="shapes" :currentShapes="currentShapes" @shapeClicked="handleShapeClicked"
-                    @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" />
-    
+            @shapeDragged="handleShapeDragged" @shapeDropped="handleShapeDropped" />
+
         <div v-if="gameOver" class="game-over-overlay">
             <div class="game-over-message">Game Over!</div>
             <button @click="resetBoard" class="restart-button">Restart</button>
@@ -22,8 +24,10 @@
         <button @click="openCustomPieceCreator" class="create-piece-button">Create Your Custom Piece</button>
         <button @click="openSelectShapes" class="open-select-shapes-button">Select Shapes</button>
 
-        <CustomPieceCreator :visible="isCustomPieceCreatorVisible" @save="handleCustomPieceSave" @cancel="handleCustomPieceCancel" />
-        <SelectShapes :visible="isSelectShapesVisible" :shapes="shapes" :initialSelectedShapes="selectedShapes" @save="handleSelectShapesSave" @cancel="handleSelectShapesCancel" />
+        <CustomPieceCreator :visible="isCustomPieceCreatorVisible" @save="handleCustomPieceSave"
+            @cancel="handleCustomPieceCancel" />
+        <SelectShapes :visible="isSelectShapesVisible" :shapes="shapes" :initialSelectedShapes="selectedShapes"
+            @save="handleSelectShapesSave" @cancel="handleSelectShapesCancel" />
     </div>
 </template>
 
@@ -199,9 +203,9 @@ export default {
 
             },
             //powers: ['bomb', 'fill-bomb', 'remove-row', 'remove-column', 'fill-row', 'fill-column', 'cross-bomb','cross-fill', 'fill-all'],
-            powers: ['fill-all', 'fill-bomb','fill-row', 'fill-column', 'cross-fill'],
+            powers: ['fill-all', 'fill-bomb', 'fill-row', 'fill-column', 'cross-fill'],
             colors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'],
-            currentShapes: [],  
+            currentShapes: [],
             selectedShape: '',
             selectedShapeColor: '',
             selectedShapePower: '',
@@ -244,7 +248,7 @@ export default {
                         clearInterval(interval);
                     }
                 }, 1);
-            }else{
+            } else {
                 this.scoreDisplay = this.score;
             }
         },
@@ -256,7 +260,7 @@ export default {
         },
         resetBoard() {
             this.board = Array.from({ length: 8 }, () => Array(8).fill(null));
-            this.gameOver = false; 
+            this.gameOver = false;
             this.highScore = Math.max(this.score, this.highScore);
             this.score = 0;
             this.combo = 0;
@@ -280,16 +284,16 @@ export default {
             }
             this.score += shapeBlocks; // Points for placing the shape
             this.removeShape(this.selectedShape);
-            
+
             if (this.selectedShapePower) {
                 this.applyPowerEffect(this.selectedShapePower, row, col);
             }
 
             setTimeout(() => {
                 let { completedRows, rowPositions } = this.checkRows();
-                console.log(`completedRows, rowPositions`,completedRows, rowPositions);
+                console.log(`completedRows, rowPositions`, completedRows, rowPositions);
                 let { completedColumns, colPositions } = this.checkColumns();
-                console.log(`completedColumns, colPositions`,completedColumns, colPositions);
+                console.log(`completedColumns, colPositions`, completedColumns, colPositions);
                 let totalCompleted = completedRows + completedColumns;
 
                 if (totalCompleted > 0) {
@@ -306,7 +310,7 @@ export default {
 
                     // Show score animations for completed rows
                     if (completedRows > 0) {
-                        if(multiBonus + comboBonus > 0) {
+                        if (multiBonus + comboBonus > 0) {
                             this.showScoreAnimation(multiBonus + comboBonus, rowPositions[0], 0, true, "Combo");
                         } else {
                             this.showScoreAnimation(rowPoints, rowPositions[0], 0, true, "Good");
@@ -314,14 +318,14 @@ export default {
                     }
 
                     // Show score animations for completed columns
-                    if(completedColumns > 0) {
-                        if(multiBonus + comboBonus > 0) {
+                    if (completedColumns > 0) {
+                        if (multiBonus + comboBonus > 0) {
                             this.showScoreAnimation(multiBonus + comboBonus, 0, colPositions[0], false, "Combo");
                         } else {
                             this.showScoreAnimation(colPoints, 0, colPositions[0], false, "Good");
                         }
                     }
-                    
+
                 }
                 setTimeout(() => {
                     if (this.checkBoardClear()) {
@@ -332,7 +336,7 @@ export default {
 
             }, 500);
 
-            setTimeout(() => { 
+            setTimeout(() => {
                 if (this.currentShapes.length === 0) {
                     if (!this.rowsOrColumnsCompleted) {
                         this.combo = 0; // Reset combo if no rows/columns were completed in the last play of the round
@@ -342,10 +346,10 @@ export default {
                 this.gameOver = this.checkGameOver();
                 this.saveState(); // Save the current state after removing the completed rows/columns
             }, 2000);
-            
+
         },
-        applyPowerEffect(power, row, col){
-            switch(power){
+        applyPowerEffect(power, row, col) {
+            switch (power) {
                 case 'bomb':
                     this.applyBombPower(row, col);
                     break;
@@ -358,7 +362,7 @@ export default {
                 case 'cross-fill':
                     this.applyCrossFillPower(row, col);
                     break;
-                    case 'fill-all':
+                case 'fill-all':
                     this.applyFillAllPower();
                     break;
                 case 'remove-row':
@@ -411,7 +415,7 @@ export default {
             for (let i = row - 1; i <= row + 1; i++) {
                 for (let j = col - 1; j <= col + 1; j++) {
                     if (this.board[i] && this.board[i][j] !== undefined) {
-                        if(this.board[i][j] === null){
+                        if (this.board[i][j] === null) {
                             this.board[i][j] = this.selectedShapeColor;
                         }
                     }
@@ -450,7 +454,7 @@ export default {
             for (let i = 0; i < this.board.length; i++) {
                 if (this.board[i].every(block => block !== null)) {
                     rowPositions.push(i);
-                   this.removeRow(i);
+                    this.removeRow(i);
                 }
             }
             return { completedRows: rowPositions.length, rowPositions };
@@ -550,7 +554,7 @@ export default {
             });
 
             this.currentShapes.forEach(shape => {
-                if(shape.name === 'single'){
+                if (shape.name === 'single') {
                     shape.power = this.powers[Math.floor(Math.random() * this.powers.length)];
                 }
             });
@@ -630,7 +634,7 @@ export default {
             this.isCustomPieceCreatorVisible = false;
             const customShape = grid.map(row => row.map(cell => (cell ? 1 : 0)));
             this.shapes.custom = customShape;
-            this.currentShapes.push({ name: 'custom', color: '#'+Math.floor(Math.random()*16777215).toString(16) });
+            this.currentShapes.push({ name: 'custom', color: '#' + Math.floor(Math.random() * 16777215).toString(16) });
             this.saveState();
         },
         handleCustomPieceCancel() {
@@ -643,7 +647,7 @@ export default {
             this.isSelectShapesVisible = false;
             this.selectedShapes = selectedShapes;
             this.getRandomShapes();
-            this.saveState(); 
+            this.saveState();
         },
         handleSelectShapesCancel() {
             this.isSelectShapesVisible = false;
@@ -665,7 +669,7 @@ export default {
         getAnimationStyle(animation) {
             const size = 40; // Assuming each cell is 40x40 pixels
             const top = animation.isRow ? ((animation.row) * size) : size * 4;
-            const left = animation.isRow ? size * 4 : ((animation.col + 1)  * size);
+            const left = animation.isRow ? size * 4 : ((animation.col + 1) * size);
             return {
                 top: `${top}px`,
                 left: `${left}px`,
