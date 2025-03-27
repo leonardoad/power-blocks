@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.7](https://github.com/leonardoad/power-blocks/compare/v0.1.6...v0.1.7) (2025-03-27)
+
+
+### Features
+
+* add detailed description of power blocks in README ([b4e3d9d](https://github.com/leonardoad/power-blocks/commit/b4e3d9de706f61b6fd4d531c8be89e276e6aa58b))
+* add LICENSE file and update README with project details and instructions ([91207a6](https://github.com/leonardoad/power-blocks/commit/91207a6b6021bf1101669f1ed33c437d16c4a603))
+
+
+### Bug Fixes
+
+* update Block component to display only power and restore original powers list in GameBoard ([4a9d07c](https://github.com/leonardoad/power-blocks/commit/4a9d07c9297204a118e20cd11ace07546b7387d6))
+* update live demo link in README to point to the correct URL ([d7ee7c6](https://github.com/leonardoad/power-blocks/commit/d7ee7c6987f5ff3cce26dc797a0b15811ccc6f12))
+
 ### [0.1.6](https://github.com/leonardoad/BlockBlast/compare/v0.1.5...v0.1.6) (2025-03-01)
 
 
