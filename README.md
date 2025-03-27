@@ -3,7 +3,7 @@
 Power Blocks!! is an engaging and dynamic game built with Vue.js. The goal is to clear blocks by strategically placing them on the grid. Challenge yourself and aim for the highest score!
 
 ## Live Demo
-Check out the live demo of the game [here](https://leonardoad.github.io/BlockBlast/).
+Check out the live demo of the game [here](https://leonardoad.github.io/power-blocks/).
 
 ## Features
 - Interactive gameplay with intuitive controls
