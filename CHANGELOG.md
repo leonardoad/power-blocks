@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.1.8](https://github.com/leonardoad/power-blocks/compare/v0.1.7...v0.1.8) (2025-03-27)
+
+
+### Bug Fixes
+
+* rename project from BlockBlast to power-blocks in package.json and vue.config.js ([b2c95da](https://github.com/leonardoad/power-blocks/commit/b2c95dabaf0c9a24babced2301a7c091bfb9751d))
+
 ### [0.1.7](https://github.com/leonardoad/power-blocks/compare/v0.1.6...v0.1.7) (2025-03-27)
 
 
