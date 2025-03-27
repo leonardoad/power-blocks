@@ -202,8 +202,8 @@ export default {
                 ],
 
             },
-            //powers: ['bomb', 'fill-bomb', 'remove-row', 'remove-column', 'fill-row', 'fill-column', 'cross-bomb','cross-fill', 'fill-all'],
-            powers: ['fill-all', 'fill-bomb', 'fill-row', 'fill-column', 'cross-fill'],
+            powers: ['bomb', 'fill-bomb', 'remove-row', 'remove-column', 'fill-row', 'fill-column', 'cross-bomb','cross-fill', 'fill-all'],
+            // powers: ['fill-all', 'fill-bomb', 'fill-row', 'fill-column', 'cross-fill'],
             colors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF'],
             currentShapes: [],
             selectedShape: {

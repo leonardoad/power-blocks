@@ -14,7 +14,7 @@
           </div>
       </div>
   </div>
-  {{ power || name }}
+  {{ power }}
 </template>
 
 <script>
